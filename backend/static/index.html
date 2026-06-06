@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LiveLife 本地预览</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">LiveLife</div>
+      <div class="topbar-actions">
+        <nav aria-label="Primary">
+          <a href="#events" data-i18n="navEvents">活动 / 商店</a>
+          <a href="#content" data-i18n="navContent">内容推荐</a>
+          <a href="#join" data-i18n="navJoin">加入我们</a>
+        </nav>
+        <div class="language-switcher" aria-label="语言选择">
+          <button class="language-button active" type="button" data-lang="zh">中文</button>
+          <button class="language-button" type="button" data-lang="ja">日本語</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <p class="eyebrow" data-i18n="heroEyebrow">东京 Livehouse MVP</p>
+          <h1 data-i18n="heroTitle">演出情报、CD/唱片 Shop 和本地音乐现场入口。</h1>
+          <p class="lead">
+            <span data-i18n="heroLeadBefore">这个本地预览页由 Go API 驱动。React 前端骨架已经放在</span>
+            <code>frontend/</code>
+            <span data-i18n="heroLeadAfter">，下一步可以直接切换到正式前端开发。</span>
+          </p>
+        </div>
+        <div class="status-card">
+          <span class="status-dot"></span>
+          <div>
+            <strong id="healthStatus">正在检查 API</strong>
+            <span id="healthMeta">/api/health</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="events" class="section">
+        <div class="section-heading">
+          <p class="eyebrow" data-i18n="eventsEyebrow">下一场活动</p>
+          <h2 data-i18n="eventsTitle">活动 / 商店列表</h2>
+        </div>
+        <div id="eventsGrid" class="grid"></div>
+      </section>
+
+      <section id="content" class="section two-column">
+        <div>
+          <p class="eyebrow" data-i18n="contentEyebrow">内容</p>
+          <h2 data-i18n="contentTitle">推荐内容</h2>
+          <div id="contentList" class="stack"></div>
+        </div>
+        <aside class="connect-panel">
+          <p class="eyebrow" data-i18n="connectEyebrow">连接</p>
+          <h2 data-i18n="connectTitle">关注与投稿</h2>
+          <div class="link-row" data-i18n="linkArticles">文章</div>
+          <div class="link-row" data-i18n="linkPhotos">活动照片</div>
+          <div class="link-row">SNS</div>
+          <div class="link-row" data-i18n="linkVideos">视频</div>
+          <div class="link-row" data-i18n="linkSubmission">投稿入口</div>
+        </aside>
+      </section>
+
+      <section id="join" class="section">
+        <div class="section-heading">
+          <p class="eyebrow" data-i18n="joinEyebrow">加入我们</p>
+          <h2 data-i18n="joinTitle">本地 API 表单测试</h2>
+        </div>
+        <form id="joinForm" class="join-form">
+          <label>
+            <span data-i18n="labelNickname">昵称</span>
+            <input name="nickname" placeholder="LiveLife 朋友" data-i18n-placeholder="placeholderNickname" required />
+          </label>
+          <label>
+            <span data-i18n="labelEmail">邮箱</span>
+            <input name="email" type="email" placeholder="you@example.com" data-i18n-placeholder="placeholderEmail" required />
+          </label>
+          <label>
+            <span data-i18n="labelRole">身份</span>
+            <input name="role" placeholder="观众 / 音乐人 / 店铺 / 工作人员" data-i18n-placeholder="placeholderRole" />
+          </label>
+          <label class="wide">
+            <span data-i18n="labelMessage">留言</span>
+            <textarea name="message" rows="4" placeholder="你想和 LiveLife 一起做什么？" data-i18n-placeholder="placeholderMessage"></textarea>
+          </label>
+          <button type="submit" data-i18n="submitButton">提交</button>
+          <p id="formResult" class="form-result" role="status"></p>
+        </form>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
