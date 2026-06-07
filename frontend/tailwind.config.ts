@@ -5,11 +5,13 @@ export default {
   theme: {
     extend: {
       colors: {
-        night: "#111111",
-        cream: "#f5f1ea",
-        amber: "#f5c84b",
-        pink: "#e04f9a",
-        green: "#7fd39a",
+        paper: "#f4efdf",
+        ink: "#111111",
+        muted: "#665f53",
+        yellow: "#ffd000",
+        blue: "#2457ff",
+        red: "#e5002a",
+        green: "#00c26f",
       },
     },
   },

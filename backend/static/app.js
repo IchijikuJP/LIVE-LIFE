@@ -2,31 +2,38 @@ const translations = {
   zh: {
     langAttr: "zh-Hans",
     navShows: "演出情报",
-    navCD: "CD",
-    navShop: "Shop",
-    navConnect: "Connect",
-    heroEyebrow: "TOKYO MUSIC ENTRY",
-    heroTitle: "LIVE LIFE 把东京现场、CD 和 Shop 分开整理。",
-    heroLead: "先从我们自己的演出和推荐演出情报开始，把票务、CD、Shop 和售后联系拆成清楚的入口。",
-    heroPrimary: "看演出情报",
-    heroSecondary: "联系 LIVE LIFE",
+    navCDSelect: "CD 严选",
+    navArchive: "档案",
+    navConnect: "联系",
+    heroEyebrow: "TOKYO MUSIC INDEX",
+    heroTitle: "LIVE LIFE 是东京现场、CD 严选和音乐档案入口。",
+    heroLead: "我们把 LIVE LIFE 自主演出、推荐现场、CD/黑胶严选、历史档案和售后联系整理成一个清楚的音乐入口。",
+    heroPrimary: "看演出日程",
+    heroSecondary: "进入 CD 严选",
     healthChecking: "正在检查 API",
     healthOnline: "API 已连接",
     healthOffline: "API 未连接",
+    scheduleEyebrow: "SCHEDULE",
+    scheduleTitle: "近期日程",
+    entryShows: "演出情报",
+    entryCDSelect: "CD 严选",
+    entryArchive: "档案",
+    entryConnect: "联系",
     showsEyebrow: "SHOWS",
     showsTitle: "演出情报",
-    showsNote: "我们自己的演出固定在最上面；推荐演出和历史视觉档案放在下面。",
-    cdEyebrow: "CD",
-    cdTitle: "CD 单独成页",
-    cdCopy: "CD 不和演出页混在一起，后续可以做试听、发行物介绍和购买入口。",
-    shopEyebrow: "SHOP",
-    shopTitle: "Shop 独立讨论购买流程",
-    shopCopy: "登录注册、购物车、支付和订单先不做，等购买流程确定后再接。",
-    contentEyebrow: "NOTES",
-    contentTitle: "首页内容摘要",
+    showsNote: "LIVE LIFE 自主演出固定在最上方，推荐演出和历史视觉档案放在下面。",
+    cdEyebrow: "CD SELECT",
+    cdTitle: "CD 严选",
+    cdCopy: "这里分成 CD 和黑胶。单品详情里的购买按钮会跳到外部 Shop，例如 BASE。",
+    formatAll: "全部",
+    formatCD: "CD",
+    formatVinyl: "黑胶",
+    archiveEyebrow: "ARCHIVE",
+    archiveTitle: "档案",
+    archiveCopy: "历史海报、公开资料备注、照片和推荐文章以后会集中在这里。",
     connectEyebrow: "CONNECT",
-    connectTitle: "付款、票务、发货或合作问题，都从这里联系。",
-    connectCopy: "这个入口不是 Join us，而是 LIVE LIFE 的统一消息入口。比如付款后没有收到货、CD/Shop 发货问题、活动合作、投稿，都可以从这里发消息。",
+    connectTitle: "票务、购买、发货或合作问题，都从这里联系。",
+    connectCopy: "外部平台购买后没有收到货、CD/黑胶购买咨询、票务问题、活动合作和投稿，都可以从这里给 LIVE LIFE 发消息。",
     labelNickname: "昵称",
     labelEmail: "邮箱",
     labelTopic: "问题类型",
@@ -35,8 +42,8 @@ const translations = {
     placeholderEmail: "you@example.com",
     placeholderMessage: "请写下你遇到的问题或想联系 LIVE LIFE 的原因。",
     topicTicket: "票务",
-    topicCdShop: "CD / Shop",
-    topicSupport: "付款或发货问题",
+    topicCDSelect: "CD 严选",
+    topicSupport: "购买或发货问题",
     topicCollab: "合作 / 投稿",
     submitButton: "发送消息",
     submitting: "发送中...",
@@ -47,35 +54,47 @@ const translations = {
     recommendBadge: "推荐 / 档案",
     ticketPending: "票务待确认",
     sourceNote: "资料备注",
+    scheduleLive: "LIVE",
+    scheduleCD: "CD",
+    scheduleVinyl: "VINYL",
+    viewDetail: "查看详情",
+    externalShopNote: "购买会跳转到外部 Shop",
   },
   ja: {
     langAttr: "ja",
     navShows: "ライブ情報",
-    navCD: "CD",
-    navShop: "Shop",
-    navConnect: "Connect",
-    heroEyebrow: "TOKYO MUSIC ENTRY",
-    heroTitle: "LIVE LIFE は東京のライブ、CD、Shop を分けて整理します。",
-    heroLead: "まずは自主公演とおすすめライブ情報から始め、チケット、CD、Shop、問い合わせの入口を明確に分けます。",
-    heroPrimary: "ライブ情報を見る",
-    heroSecondary: "LIVE LIFE に連絡",
+    navCDSelect: "CDセレクト",
+    navArchive: "アーカイブ",
+    navConnect: "問い合わせ",
+    heroEyebrow: "TOKYO MUSIC INDEX",
+    heroTitle: "LIVE LIFE は東京のライブ、CDセレクト、音楽アーカイブの入口です。",
+    heroLead: "自主公演、おすすめライブ、CD/ヴァイナルセレクト、アーカイブ、問い合わせをひとつの音楽入口として整理します。",
+    heroPrimary: "スケジュールを見る",
+    heroSecondary: "CDセレクトへ",
     healthChecking: "API 確認中",
     healthOnline: "API 接続済み",
     healthOffline: "API 未接続",
+    scheduleEyebrow: "SCHEDULE",
+    scheduleTitle: "近日予定",
+    entryShows: "ライブ情報",
+    entryCDSelect: "CDセレクト",
+    entryArchive: "アーカイブ",
+    entryConnect: "問い合わせ",
     showsEyebrow: "SHOWS",
     showsTitle: "ライブ情報",
-    showsNote: "自主公演を最上部に固定し、おすすめ公演と過去ビジュアルは下に分けて表示します。",
-    cdEyebrow: "CD",
-    cdTitle: "CD は独立ページへ",
-    cdCopy: "CD はライブ情報と混ぜず、試聴、リリース紹介、購入導線を後から追加できる形にします。",
-    shopEyebrow: "SHOP",
-    shopTitle: "Shop は購入フローを別途検討",
-    shopCopy: "ログイン、カート、決済、注文管理はまだ作らず、購入フローが決まってから接続します。",
-    contentEyebrow: "NOTES",
-    contentTitle: "ホーム用メモ",
+    showsNote: "LIVE LIFE の自主公演を最上部に固定し、おすすめ公演と過去ビジュアルは下に分けて表示します。",
+    cdEyebrow: "CD SELECT",
+    cdTitle: "CDセレクト",
+    cdCopy: "CD とヴァイナルに分けます。詳細内の購入ボタンは BASE など外部ショップへ遷移します。",
+    formatAll: "すべて",
+    formatCD: "CD",
+    formatVinyl: "ヴァイナル",
+    archiveEyebrow: "ARCHIVE",
+    archiveTitle: "アーカイブ",
+    archiveCopy: "過去フライヤー、公開情報メモ、写真、推薦記事などをここに集約します。",
     connectEyebrow: "CONNECT",
-    connectTitle: "支払い、チケット、発送、コラボの相談はこちらから。",
-    connectCopy: "これは Join us ではなく、LIVE LIFE の共通問い合わせ入口です。未着、CD/Shop、イベント協力、投稿などをここから送れます。",
+    connectTitle: "チケット、購入、発送、コラボの相談はこちらから。",
+    connectCopy: "外部ショップ購入後の未着、CD/ヴァイナル購入相談、チケット、イベント協力、投稿などを LIVE LIFE に送れます。",
     labelNickname: "ニックネーム",
     labelEmail: "メール",
     labelTopic: "問い合わせ種別",
@@ -84,8 +103,8 @@ const translations = {
     placeholderEmail: "you@example.com",
     placeholderMessage: "困っていること、または LIVE LIFE に連絡したい内容を書いてください。",
     topicTicket: "チケット",
-    topicCdShop: "CD / Shop",
-    topicSupport: "支払い・発送",
+    topicCDSelect: "CDセレクト",
+    topicSupport: "購入・発送",
     topicCollab: "協力 / 投稿",
     submitButton: "送信",
     submitting: "送信中...",
@@ -96,88 +115,113 @@ const translations = {
     recommendBadge: "おすすめ / アーカイブ",
     ticketPending: "チケット確認中",
     sourceNote: "情報メモ",
+    scheduleLive: "LIVE",
+    scheduleCD: "CD",
+    scheduleVinyl: "VINYL",
+    viewDetail: "詳細を見る",
+    externalShopNote: "購入は外部ショップへ移動します",
   },
   en: {
     langAttr: "en",
-    navShows: "Shows",
-    navCD: "CD",
-    navShop: "Shop",
-    navConnect: "Connect",
-    heroEyebrow: "TOKYO MUSIC ENTRY",
-    heroTitle: "LIVE LIFE separates Tokyo shows, CDs, and Shop clearly.",
-    heroLead: "We start with owned shows and recommended live information, then keep ticketing, CDs, Shop, and support messages in separate lanes.",
-    heroPrimary: "View shows",
-    heroSecondary: "Contact LIVE LIFE",
-    healthChecking: "Checking API",
-    healthOnline: "API connected",
-    healthOffline: "API offline",
+    navShows: "SHOWS",
+    navCDSelect: "CD SELECT",
+    navArchive: "ARCHIVE",
+    navConnect: "CONNECT",
+    heroEyebrow: "TOKYO MUSIC INDEX",
+    heroTitle: "LIVE LIFE IS AN ENTRY POINT FOR TOKYO SHOWS, CD SELECT, AND MUSIC ARCHIVES.",
+    heroLead: "WE ORGANIZE OWNED SHOWS, RECOMMENDED LIVE DATES, CD/VINYL SELECT, ARCHIVES, AND SUPPORT MESSAGES INTO ONE CLEAR MUSIC INDEX.",
+    heroPrimary: "VIEW SCHEDULE",
+    heroSecondary: "ENTER CD SELECT",
+    healthChecking: "CHECKING API",
+    healthOnline: "API CONNECTED",
+    healthOffline: "API OFFLINE",
+    scheduleEyebrow: "SCHEDULE",
+    scheduleTitle: "UPCOMING",
+    entryShows: "SHOWS",
+    entryCDSelect: "CD SELECT",
+    entryArchive: "ARCHIVE",
+    entryConnect: "CONNECT",
     showsEyebrow: "SHOWS",
-    showsTitle: "Live information",
-    showsNote: "Owned LIVE LIFE shows stay at the top. Recommendations and archive visuals sit below.",
-    cdEyebrow: "CD",
-    cdTitle: "CD gets its own page",
-    cdCopy: "CD content stays separate from shows, ready for listening notes, releases, and future purchase links.",
-    shopEyebrow: "SHOP",
-    shopTitle: "Shop stays separate while checkout is discussed",
-    shopCopy: "Login, cart, payment, and orders are intentionally deferred until the buying flow is decided.",
-    contentEyebrow: "NOTES",
-    contentTitle: "Homepage notes",
+    showsTitle: "SHOWS",
+    showsNote: "LIVE LIFE OWNED SHOWS STAY AT THE TOP. RECOMMENDATIONS AND ARCHIVE VISUALS SIT BELOW.",
+    cdEyebrow: "CD SELECT",
+    cdTitle: "CD SELECT",
+    cdCopy: "CD SELECT IS SPLIT INTO CD AND VINYL. PURCHASE BUTTONS ON DETAIL CARDS LINK TO EXTERNAL SHOPS SUCH AS BASE.",
+    formatAll: "ALL",
+    formatCD: "CD",
+    formatVinyl: "VINYL",
+    archiveEyebrow: "ARCHIVE",
+    archiveTitle: "ARCHIVE",
+    archiveCopy: "PAST POSTERS, PUBLIC RESEARCH NOTES, PHOTOS, AND RECOMMENDED ARTICLES WILL LIVE HERE.",
     connectEyebrow: "CONNECT",
-    connectTitle: "Payment, ticketing, shipping, or collaboration questions start here.",
-    connectCopy: "This is not a Join us form. It is the shared LIVE LIFE message entry for missing orders, CD/Shop questions, event collaboration, and submissions.",
-    labelNickname: "Name",
-    labelEmail: "Email",
-    labelTopic: "Topic",
-    labelMessage: "Message",
-    placeholderNickname: "LIVE LIFE friend",
+    connectTitle: "TICKETS, PURCHASES, SHIPPING, OR COLLABORATION QUESTIONS START HERE.",
+    connectCopy: "MESSAGE LIVE LIFE ABOUT EXTERNAL SHOP ORDERS, CD/VINYL QUESTIONS, TICKETS, EVENT COLLABORATION, OR SUBMISSIONS.",
+    labelNickname: "NAME",
+    labelEmail: "EMAIL",
+    labelTopic: "TOPIC",
+    labelMessage: "MESSAGE",
+    placeholderNickname: "LIVE LIFE FRIEND",
     placeholderEmail: "you@example.com",
-    placeholderMessage: "Tell us what happened or why you want to contact LIVE LIFE.",
-    topicTicket: "Ticketing",
-    topicCdShop: "CD / Shop",
-    topicSupport: "Payment or shipping",
-    topicCollab: "Collaboration / submission",
-    submitButton: "Send message",
-    submitting: "Sending...",
-    submitFallback: "LIVE LIFE received your message.",
-    submitFailed: "Send failed",
-    requestFailed: "Request failed",
-    ownBadge: "LIVE LIFE owned show",
-    recommendBadge: "Recommendation / archive",
-    ticketPending: "Ticketing pending",
-    sourceNote: "Source note",
+    placeholderMessage: "TELL US WHAT HAPPENED OR WHY YOU WANT TO CONTACT LIVE LIFE.",
+    topicTicket: "TICKETING",
+    topicCDSelect: "CD SELECT",
+    topicSupport: "PURCHASE OR SHIPPING",
+    topicCollab: "COLLABORATION / SUBMISSION",
+    submitButton: "SEND MESSAGE",
+    submitting: "SENDING...",
+    submitFallback: "LIVE LIFE RECEIVED YOUR MESSAGE.",
+    submitFailed: "SEND FAILED",
+    requestFailed: "REQUEST FAILED",
+    ownBadge: "LIVE LIFE OWNED SHOW",
+    recommendBadge: "RECOMMENDATION / ARCHIVE",
+    ticketPending: "TICKETING PENDING",
+    sourceNote: "SOURCE NOTE",
+    scheduleLive: "LIVE",
+    scheduleCD: "CD",
+    scheduleVinyl: "VINYL",
+    viewDetail: "VIEW DETAIL",
+    externalShopNote: "PURCHASE OPENS AN EXTERNAL SHOP",
   },
 };
 
 const healthStatus = document.querySelector("#healthStatus");
 const healthMeta = document.querySelector("#healthMeta");
 const statusDot = document.querySelector(".status-dot");
+const scheduleList = document.querySelector("#scheduleList");
 const ownedEvents = document.querySelector("#ownedEvents");
 const recommendedEvents = document.querySelector("#recommendedEvents");
 const cdList = document.querySelector("#cdList");
-const shopList = document.querySelector("#shopList");
 const contentList = document.querySelector("#contentList");
 const connectForm = document.querySelector("#connectForm");
 const formResult = document.querySelector("#formResult");
 const languageButtons = Array.from(document.querySelectorAll(".language-button"));
+const formatTabs = Array.from(document.querySelectorAll(".format-tab"));
 
 let currentLanguage = "zh";
+let currentFormat = "all";
 let cachedEvents = [];
-let cachedCDItems = [];
-let cachedShopItems = [];
+let cachedCatalogItems = [];
 let cachedContents = [];
 let lastHealth = null;
 
-// t 是页面的统一翻译读取函数。
-// 如果当前语言缺少某个 key，就回退到中文，再回退到 key 本身，避免页面空白。
+// 统一读取 UI 翻译。缺失时先回退中文，避免切语言后出现空白。
 function t(key) {
   return translations[currentLanguage]?.[key] || translations.zh[key] || key;
 }
 
-// localizedText 专门读取 API 返回的 titleI18n / summaryI18n 等三语言字段。
-// 后端以后接数据库时，只要继续返回同样结构，前端语言切换逻辑不用重写。
+// 读取 API 返回的三语言字段，例如 titleI18n、summaryI18n、ticketNoteI18n。
 function localizedText(item, field) {
   const i18n = item[`${field}I18n`];
   return i18n?.[currentLanguage] || i18n?.zh || item[field] || "";
+}
+
+// 有些 API 字段本身就是三语言对象，不再带 I18n 后缀。
+// 例如 purchaseText: { zh: "点击此处购买", ja: "こちらから購入", en: "BUY HERE" }。
+function localizedMap(value) {
+  if (!value || typeof value !== "object") {
+    return "";
+  }
+  return value[currentLanguage] || value.zh || "";
 }
 
 function escapeHTML(value) {
@@ -197,11 +241,7 @@ async function getJSON(url) {
   return response.json();
 }
 
-// applyLanguage 只负责“切语言后的 UI 同步”：
-// 1. 更新 html lang，方便浏览器和搜索引擎理解当前语言。
-// 2. 替换所有 data-i18n 文案和 placeholder。
-// 3. 更新语言按钮状态。
-// 4. 用缓存数据重新渲染活动、CD、Shop 和内容卡片。
+// 切换语言时，静态文案、placeholder、Schedule、演出卡片和 CD 严选卡片都要重渲染。
 function applyLanguage(language) {
   currentLanguage = translations[language] ? language : "zh";
   document.documentElement.lang = t("langAttr");
@@ -222,10 +262,40 @@ function applyLanguage(language) {
 
   healthStatus.textContent = lastHealth?.ok ? t("healthOnline") : lastHealth ? t("healthOffline") : t("healthChecking");
 
+  renderSchedule();
   renderEvents(cachedEvents);
-  renderCatalog(cdList, cachedCDItems);
-  renderCatalog(shopList, cachedShopItems);
+  renderCatalog(cachedCatalogItems);
   renderContents(cachedContents);
+}
+
+function renderSchedule() {
+  const liveItems = cachedEvents.filter((event) => event.owned).slice(0, 2).map((event) => ({
+    type: t("scheduleLive"),
+    date: event.date,
+    title: localizedText(event, "title"),
+    meta: event.venue,
+    status: localizedText(event, "ticketNote") || t("ticketPending"),
+  }));
+
+  const catalogItems = cachedCatalogItems.slice(0, 2).map((item) => ({
+    type: item.format === "vinyl" ? t("scheduleVinyl") : t("scheduleCD"),
+    date: "TBD",
+    title: localizedText(item, "title"),
+    meta: item.artist,
+    status: item.status,
+  }));
+
+  const items = [...liveItems, ...catalogItems];
+  scheduleList.innerHTML = items.map((item) => `
+    <article class="schedule-item">
+      <div class="schedule-date">${escapeHTML(item.date)}</div>
+      <div>
+        <span>${escapeHTML(item.type)}</span>
+        <strong>${escapeHTML(item.title)}</strong>
+        <small>${escapeHTML(item.meta)} / ${escapeHTML(item.status)}</small>
+      </div>
+    </article>
+  `).join("");
 }
 
 function renderEvents(events) {
@@ -235,8 +305,6 @@ function renderEvents(events) {
   recommendedEvents.innerHTML = rest.map((event) => renderEvent(event, false)).join("");
 }
 
-// renderEvent 是首页演出情报的核心渲染函数。
-// 自主演出会用大卡片展示，推荐/档案内容用较轻的卡片展示，避免票务代理问题和 Shop 购买流程混在一起。
 function renderEvent(event, featured) {
   const tags = (event.tags || []).map((tag) => `<span class="tag">${escapeHTML(tag)}</span>`).join("");
   const lineup = (event.lineup || []).map((name) => `<span>${escapeHTML(name)}</span>`).join("");
@@ -269,13 +337,23 @@ function renderEvent(event, featured) {
   `;
 }
 
-function renderCatalog(target, items) {
-  target.innerHTML = items.map((item) => `
+function renderCatalog(items) {
+  const filtered = currentFormat === "all" ? items : items.filter((item) => item.format === currentFormat);
+  cdList.innerHTML = filtered.map((item) => `
     <article class="catalog-card">
-      <span class="pill">${escapeHTML(item.status || item.kind)}</span>
-      <h3>${escapeHTML(localizedText(item, "title"))}</h3>
-      <p>${escapeHTML(localizedText(item, "summary"))}</p>
-      <strong>${escapeHTML(item.price || "TBD")}</strong>
+      ${item.imageUrl ? `<img src="${escapeHTML(item.imageUrl)}" alt="${escapeHTML(localizedText(item, "title"))}" />` : `<div class="catalog-art" aria-hidden="true"></div>`}
+      <div class="catalog-body">
+        <span class="pill">${escapeHTML(item.format === "vinyl" ? t("formatVinyl") : t("formatCD"))}</span>
+        <h3>${escapeHTML(localizedText(item, "title"))}</h3>
+        <p class="artist">${escapeHTML(item.artist)}</p>
+        <p>${escapeHTML(localizedText(item, "summary"))}</p>
+        <div class="track-list">${(item.tracks || []).map((track) => `<span>${escapeHTML(track)}</span>`).join("")}</div>
+        <div class="catalog-actions">
+          <span>${escapeHTML(item.price || "TBD")}</span>
+          <a class="button buy-button" href="${escapeHTML(item.purchaseUrl)}" target="_blank" rel="noreferrer">${escapeHTML(localizedMap(item.purchaseText) || t("viewDetail"))}</a>
+        </div>
+        <small>${escapeHTML(t("externalShopNote"))}</small>
+      </div>
     </article>
   `).join("");
 }
@@ -290,9 +368,7 @@ function renderContents(contents) {
   `).join("");
 }
 
-// boot 是本地预览页的启动函数。
-// 它会同时拉取健康检查、演出、CD、Shop 和首页内容摘要。接口失败时页面仍可显示基础结构，
-// 这样前端审批稿不会因为后端暂时没启动而完全空白。
+// 页面启动时加载健康检查、演出、CD 严选和 Archive 摘要。
 async function boot() {
   applyLanguage(currentLanguage);
 
@@ -309,22 +385,20 @@ async function boot() {
   }
 
   try {
-    const [eventsData, cdData, shopData, contentsData] = await Promise.all([
+    const [eventsData, cdData, contentsData] = await Promise.all([
       getJSON("/api/events"),
       getJSON("/api/cd-items"),
-      getJSON("/api/shop-items"),
       getJSON("/api/contents"),
     ]);
     cachedEvents = eventsData.events || [];
-    cachedCDItems = cdData.items || [];
-    cachedShopItems = shopData.items || [];
+    cachedCatalogItems = cdData.items || [];
     cachedContents = contentsData.contents || [];
+    renderSchedule();
     renderEvents(cachedEvents);
-    renderCatalog(cdList, cachedCDItems);
-    renderCatalog(shopList, cachedShopItems);
+    renderCatalog(cachedCatalogItems);
     renderContents(cachedContents);
   } catch (error) {
-    ownedEvents.innerHTML = `<p class="summary">${escapeHTML(error.message)}</p>`;
+    scheduleList.innerHTML = `<p class="summary">${escapeHTML(error.message)}</p>`;
   }
 }
 
@@ -332,9 +406,15 @@ languageButtons.forEach((button) => {
   button.addEventListener("click", () => applyLanguage(button.dataset.lang));
 });
 
-// Connect 表单目前只做本地 API 测试提交。
-// 未来如果接客服系统或邮件通知，只需要在 /api/connect 后端处理函数里扩展，
-// 前端仍然可以沿用这个表单结构。
+formatTabs.forEach((button) => {
+  button.addEventListener("click", () => {
+    currentFormat = button.dataset.format;
+    formatTabs.forEach((tab) => tab.classList.toggle("active", tab === button));
+    renderCatalog(cachedCatalogItems);
+  });
+});
+
+// Connect 表单当前只做本地 API 验证，未来可以在后端接邮件、数据库或客服系统。
 connectForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   formResult.textContent = t("submitting");

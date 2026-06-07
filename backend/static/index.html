@@ -8,46 +8,86 @@
   </head>
   <body>
     <header class="topbar">
-      <a class="brand" href="#home" aria-label="LIVE LIFE">LIVE LIFE</a>
+      <a class="brand" href="#home" aria-label="LIVE LIFE">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>LIVE LIFE</span>
+      </a>
       <div class="topbar-actions">
         <nav aria-label="Primary">
           <a href="#shows" data-i18n="navShows">演出情报</a>
-          <a href="#cd" data-i18n="navCD">CD</a>
-          <a href="#shop" data-i18n="navShop">Shop</a>
-          <a href="#connect" data-i18n="navConnect">Connect</a>
+          <a href="#cd-select" data-i18n="navCDSelect">CD 严选</a>
+          <a href="#archive" data-i18n="navArchive">档案</a>
+          <a href="#connect" data-i18n="navConnect">联系</a>
         </nav>
         <div class="language-switcher" aria-label="语言选择">
           <button class="language-button active" type="button" data-lang="zh" aria-pressed="true">中文</button>
           <button class="language-button" type="button" data-lang="ja" aria-pressed="false">日本語</button>
-          <button class="language-button" type="button" data-lang="en" aria-pressed="false">English</button>
+          <button class="language-button" type="button" data-lang="en" aria-pressed="false">ENGLISH</button>
         </div>
       </div>
     </header>
 
     <main>
-      <section id="home" class="hero">
-        <div class="hero-copy">
-          <p class="eyebrow" data-i18n="heroEyebrow">TOKYO MUSIC ENTRY</p>
-          <h1 data-i18n="heroTitle">LIVE LIFE 把东京现场、CD 和 Shop 分开整理。</h1>
-          <p class="lead" data-i18n="heroLead">
-            先从我们自己的演出和推荐演出情报开始，把票务、CD、Shop 和售后联系拆成清楚的入口。
-          </p>
-          <div class="hero-actions">
-            <a class="button primary" href="#shows" data-i18n="heroPrimary">看演出情报</a>
-            <a class="button secondary" href="#connect" data-i18n="heroSecondary">联系 LIVE LIFE</a>
+      <section id="home" class="hero-grid">
+        <div class="hero-stage">
+          <div class="band-texture" aria-hidden="true">
+            THE SMITHS / OASIS / BLUR / RADIOHEAD / PULP / SUEDE / JOY DIVISION / NEW ORDER /
+            THE CURE / STONE ROSES / MY BLOODY VALENTINE / SLOWDIVE / PRIMAL SCREAM /
+            MASSIVE ATTACK / PORTISHEAD / SONIC YOUTH / PIXIES
+          </div>
+          <div class="track-field" aria-hidden="true">
+            <span class="lane lane-a"></span>
+            <span class="lane lane-b"></span>
+            <span class="lane lane-c"></span>
+            <span class="sample sample-a"></span>
+            <span class="sample sample-b"></span>
+            <span class="wave wave-a"></span>
+            <span class="wave wave-b"></span>
+          </div>
+          <div class="hero-lockup">
+            <p class="eyebrow" data-i18n="heroEyebrow">TOKYO MUSIC INDEX</p>
+            <h1 data-i18n="heroTitle">LIVE LIFE 是东京现场、CD 严选和音乐档案入口。</h1>
+            <p class="lead" data-i18n="heroLead">
+              我们把 LIVE LIFE 自主演出、推荐现场、CD/黑胶严选、历史档案和售后联系整理成一个清楚的音乐入口。
+            </p>
+            <div class="hero-actions">
+              <a class="button primary" href="#shows" data-i18n="heroPrimary">看演出日程</a>
+              <a class="button secondary" href="#cd-select" data-i18n="heroSecondary">进入 CD 严选</a>
+            </div>
           </div>
         </div>
 
-        <aside class="hero-feature">
-          <div class="status-card">
+        <aside class="schedule-panel" aria-labelledby="scheduleTitle">
+          <div class="panel-topline">
             <span class="status-dot"></span>
             <div>
               <strong id="healthStatus">正在检查 API</strong>
               <span id="healthMeta">/api/health</span>
             </div>
           </div>
-          <img src="/assets/events/redhair-2026-july.jpg" alt="紅髪少年殺人事件 2026 东京演出海报" />
+          <p class="eyebrow" data-i18n="scheduleEyebrow">SCHEDULE</p>
+          <h2 id="scheduleTitle" data-i18n="scheduleTitle">近期日程</h2>
+          <div id="scheduleList" class="schedule-list"></div>
         </aside>
+      </section>
+
+      <section class="entry-grid" aria-label="LIVE LIFE sections">
+        <a href="#shows" class="entry-tile">
+          <span>01</span>
+          <strong data-i18n="entryShows">演出情报</strong>
+        </a>
+        <a href="#cd-select" class="entry-tile">
+          <span>02</span>
+          <strong data-i18n="entryCDSelect">CD 严选</strong>
+        </a>
+        <a href="#archive" class="entry-tile">
+          <span>03</span>
+          <strong data-i18n="entryArchive">档案</strong>
+        </a>
+        <a href="#connect" class="entry-tile">
+          <span>04</span>
+          <strong data-i18n="entryConnect">联系</strong>
+        </a>
       </section>
 
       <section id="shows" class="section">
@@ -56,40 +96,35 @@
             <p class="eyebrow" data-i18n="showsEyebrow">SHOWS</p>
             <h2 data-i18n="showsTitle">演出情报</h2>
           </div>
-          <p data-i18n="showsNote">
-            我们自己的演出固定在最上面；推荐演出和历史视觉档案放在下面。
-          </p>
+          <p data-i18n="showsNote">LIVE LIFE 自主演出固定在最上方，推荐演出和历史视觉档案放在下面。</p>
         </div>
         <div id="ownedEvents" class="event-stack"></div>
         <div id="recommendedEvents" class="grid"></div>
       </section>
 
-      <section id="cd" class="section two-column">
-        <div>
-          <p class="eyebrow" data-i18n="cdEyebrow">CD</p>
-          <h2 data-i18n="cdTitle">CD 单独成页</h2>
-          <p class="section-copy" data-i18n="cdCopy">
-            CD 不和演出页混在一起，后续可以做试听、发行物介绍和购买入口。
-          </p>
+      <section id="cd-select" class="section cd-select-section">
+        <div class="section-heading split-heading">
+          <div>
+            <p class="eyebrow" data-i18n="cdEyebrow">CD SELECT</p>
+            <h2 data-i18n="cdTitle">CD 严选</h2>
+          </div>
+          <p data-i18n="cdCopy">这里分成 CD 和黑胶。单品详情里的购买按钮会跳到外部 Shop，例如 BASE。</p>
         </div>
-        <div id="cdList" class="stack"></div>
+        <div class="format-tabs" aria-label="CD select formats">
+          <button class="format-tab active" type="button" data-format="all" data-i18n="formatAll">全部</button>
+          <button class="format-tab" type="button" data-format="cd" data-i18n="formatCD">CD</button>
+          <button class="format-tab" type="button" data-format="vinyl" data-i18n="formatVinyl">黑胶</button>
+        </div>
+        <div id="cdList" class="catalog-grid"></div>
       </section>
 
-      <section id="shop" class="section two-column">
-        <div>
-          <p class="eyebrow" data-i18n="shopEyebrow">SHOP</p>
-          <h2 data-i18n="shopTitle">Shop 独立讨论购买流程</h2>
-          <p class="section-copy" data-i18n="shopCopy">
-            登录注册、购物车、支付和订单先不做，等购买流程确定后再接。
-          </p>
-        </div>
-        <div id="shopList" class="stack"></div>
-      </section>
-
-      <section id="content" class="section">
-        <div class="section-heading">
-          <p class="eyebrow" data-i18n="contentEyebrow">NOTES</p>
-          <h2 data-i18n="contentTitle">首页内容摘要</h2>
+      <section id="archive" class="section">
+        <div class="section-heading split-heading">
+          <div>
+            <p class="eyebrow" data-i18n="archiveEyebrow">ARCHIVE</p>
+            <h2 data-i18n="archiveTitle">档案</h2>
+          </div>
+          <p data-i18n="archiveCopy">历史海报、公开资料备注、照片和推荐文章以后会集中在这里。</p>
         </div>
         <div id="contentList" class="grid compact-grid"></div>
       </section>
@@ -97,9 +132,9 @@
       <section id="connect" class="section connect-section">
         <div class="connect-copy">
           <p class="eyebrow" data-i18n="connectEyebrow">CONNECT</p>
-          <h2 data-i18n="connectTitle">付款、票务、发货或合作问题，都从这里联系。</h2>
+          <h2 data-i18n="connectTitle">票务、购买、发货或合作问题，都从这里联系。</h2>
           <p data-i18n="connectCopy">
-            这个入口不是 Join us，而是 LIVE LIFE 的统一消息入口。比如付款后没有收到货、CD/Shop 发货问题、活动合作、投稿，都可以从这里发消息。
+            外部平台购买后没有收到货、CD/黑胶购买咨询、票务问题、活动合作和投稿，都可以从这里给 LIVE LIFE 发消息。
           </p>
         </div>
         <form id="connectForm" class="connect-form">
@@ -115,8 +150,8 @@
             <span data-i18n="labelTopic">问题类型</span>
             <select name="topic">
               <option value="ticket" data-i18n="topicTicket">票务</option>
-              <option value="cd-shop" data-i18n="topicCdShop">CD / Shop</option>
-              <option value="support" data-i18n="topicSupport">付款或发货问题</option>
+              <option value="cd-select" data-i18n="topicCDSelect">CD 严选</option>
+              <option value="support" data-i18n="topicSupport">购买或发货问题</option>
               <option value="collab" data-i18n="topicCollab">合作 / 投稿</option>
             </select>
           </label>
@@ -130,6 +165,6 @@
       </section>
     </main>
 
-    <script src="/app.js"></script>
+    <script src="/app.js?v=20260607-v2"></script>
   </body>
 </html>

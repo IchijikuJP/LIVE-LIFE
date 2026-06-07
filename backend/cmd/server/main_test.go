@@ -47,20 +47,33 @@ func TestEvents(t *testing.T) {
 	}
 }
 
-func TestCatalogEndpoints(t *testing.T) {
+func TestCDItems(t *testing.T) {
 	server := NewServer()
-	for _, path := range []string{"/api/cd-items", "/api/shop-items"} {
-		rec := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, path, nil)
+	rec := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodGet, "/api/cd-items", nil)
 
-		server.ServeHTTP(rec, req)
+	server.ServeHTTP(rec, req)
 
-		if rec.Code != http.StatusOK {
-			t.Fatalf("%s expected status %d, got %d", path, http.StatusOK, rec.Code)
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected status %d, got %d", http.StatusOK, rec.Code)
+	}
+	body := rec.Body.String()
+	for _, want := range []string{`"brand":"LIVE LIFE"`, `"cd"`, `"vinyl"`, `"purchaseUrl"`} {
+		if !strings.Contains(body, want) {
+			t.Fatalf("expected %s in CD response, got %s", want, body)
 		}
-		if !strings.Contains(rec.Body.String(), `"brand":"LIVE LIFE"`) {
-			t.Fatalf("%s expected LIVE LIFE brand, got %s", path, rec.Body.String())
-		}
+	}
+}
+
+func TestShopItemsNoLongerTopLevel(t *testing.T) {
+	server := NewServer()
+	rec := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodGet, "/api/shop-items", nil)
+
+	server.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusNotFound {
+		t.Fatalf("expected status %d for removed top-level shop API, got %d", http.StatusNotFound, rec.Code)
 	}
 }
 
@@ -85,7 +98,7 @@ func TestConnectAccepted(t *testing.T) {
 	payload := ConnectRequest{
 		Nickname: "Local Tester",
 		Email:    "local@example.com",
-		Topic:    "shop",
+		Topic:    "cd-select",
 		Message:  "Testing",
 	}
 	body, err := json.Marshal(payload)
