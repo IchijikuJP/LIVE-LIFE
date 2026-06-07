@@ -3,93 +3,128 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>LiveLife 本地预览</title>
+    <title>LIVE LIFE 本地预览</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
     <header class="topbar">
-      <div class="brand">LiveLife</div>
+      <a class="brand" href="#home" aria-label="LIVE LIFE">LIVE LIFE</a>
       <div class="topbar-actions">
         <nav aria-label="Primary">
-          <a href="#events" data-i18n="navEvents">活动 / 商店</a>
-          <a href="#content" data-i18n="navContent">内容推荐</a>
-          <a href="#join" data-i18n="navJoin">加入我们</a>
+          <a href="#shows" data-i18n="navShows">演出情报</a>
+          <a href="#cd" data-i18n="navCD">CD</a>
+          <a href="#shop" data-i18n="navShop">Shop</a>
+          <a href="#connect" data-i18n="navConnect">Connect</a>
         </nav>
         <div class="language-switcher" aria-label="语言选择">
-          <button class="language-button active" type="button" data-lang="zh">中文</button>
-          <button class="language-button" type="button" data-lang="ja">日本語</button>
+          <button class="language-button active" type="button" data-lang="zh" aria-pressed="true">中文</button>
+          <button class="language-button" type="button" data-lang="ja" aria-pressed="false">日本語</button>
+          <button class="language-button" type="button" data-lang="en" aria-pressed="false">English</button>
         </div>
       </div>
     </header>
 
     <main>
-      <section class="hero">
-        <div>
-          <p class="eyebrow" data-i18n="heroEyebrow">东京 Livehouse MVP</p>
-          <h1 data-i18n="heroTitle">演出情报、CD/唱片 Shop 和本地音乐现场入口。</h1>
-          <p class="lead">
-            <span data-i18n="heroLeadBefore">这个本地预览页由 Go API 驱动。React 前端骨架已经放在</span>
-            <code>frontend/</code>
-            <span data-i18n="heroLeadAfter">，下一步可以直接切换到正式前端开发。</span>
+      <section id="home" class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow" data-i18n="heroEyebrow">TOKYO MUSIC ENTRY</p>
+          <h1 data-i18n="heroTitle">LIVE LIFE 把东京现场、CD 和 Shop 分开整理。</h1>
+          <p class="lead" data-i18n="heroLead">
+            先从我们自己的演出和推荐演出情报开始，把票务、CD、Shop 和售后联系拆成清楚的入口。
           </p>
-        </div>
-        <div class="status-card">
-          <span class="status-dot"></span>
-          <div>
-            <strong id="healthStatus">正在检查 API</strong>
-            <span id="healthMeta">/api/health</span>
+          <div class="hero-actions">
+            <a class="button primary" href="#shows" data-i18n="heroPrimary">看演出情报</a>
+            <a class="button secondary" href="#connect" data-i18n="heroSecondary">联系 LIVE LIFE</a>
           </div>
         </div>
-      </section>
 
-      <section id="events" class="section">
-        <div class="section-heading">
-          <p class="eyebrow" data-i18n="eventsEyebrow">下一场活动</p>
-          <h2 data-i18n="eventsTitle">活动 / 商店列表</h2>
-        </div>
-        <div id="eventsGrid" class="grid"></div>
-      </section>
-
-      <section id="content" class="section two-column">
-        <div>
-          <p class="eyebrow" data-i18n="contentEyebrow">内容</p>
-          <h2 data-i18n="contentTitle">推荐内容</h2>
-          <div id="contentList" class="stack"></div>
-        </div>
-        <aside class="connect-panel">
-          <p class="eyebrow" data-i18n="connectEyebrow">连接</p>
-          <h2 data-i18n="connectTitle">关注与投稿</h2>
-          <div class="link-row" data-i18n="linkArticles">文章</div>
-          <div class="link-row" data-i18n="linkPhotos">活动照片</div>
-          <div class="link-row">SNS</div>
-          <div class="link-row" data-i18n="linkVideos">视频</div>
-          <div class="link-row" data-i18n="linkSubmission">投稿入口</div>
+        <aside class="hero-feature">
+          <div class="status-card">
+            <span class="status-dot"></span>
+            <div>
+              <strong id="healthStatus">正在检查 API</strong>
+              <span id="healthMeta">/api/health</span>
+            </div>
+          </div>
+          <img src="/assets/events/redhair-2026-july.jpg" alt="紅髪少年殺人事件 2026 东京演出海报" />
         </aside>
       </section>
 
-      <section id="join" class="section">
-        <div class="section-heading">
-          <p class="eyebrow" data-i18n="joinEyebrow">加入我们</p>
-          <h2 data-i18n="joinTitle">本地 API 表单测试</h2>
+      <section id="shows" class="section">
+        <div class="section-heading split-heading">
+          <div>
+            <p class="eyebrow" data-i18n="showsEyebrow">SHOWS</p>
+            <h2 data-i18n="showsTitle">演出情报</h2>
+          </div>
+          <p data-i18n="showsNote">
+            我们自己的演出固定在最上面；推荐演出和历史视觉档案放在下面。
+          </p>
         </div>
-        <form id="joinForm" class="join-form">
+        <div id="ownedEvents" class="event-stack"></div>
+        <div id="recommendedEvents" class="grid"></div>
+      </section>
+
+      <section id="cd" class="section two-column">
+        <div>
+          <p class="eyebrow" data-i18n="cdEyebrow">CD</p>
+          <h2 data-i18n="cdTitle">CD 单独成页</h2>
+          <p class="section-copy" data-i18n="cdCopy">
+            CD 不和演出页混在一起，后续可以做试听、发行物介绍和购买入口。
+          </p>
+        </div>
+        <div id="cdList" class="stack"></div>
+      </section>
+
+      <section id="shop" class="section two-column">
+        <div>
+          <p class="eyebrow" data-i18n="shopEyebrow">SHOP</p>
+          <h2 data-i18n="shopTitle">Shop 独立讨论购买流程</h2>
+          <p class="section-copy" data-i18n="shopCopy">
+            登录注册、购物车、支付和订单先不做，等购买流程确定后再接。
+          </p>
+        </div>
+        <div id="shopList" class="stack"></div>
+      </section>
+
+      <section id="content" class="section">
+        <div class="section-heading">
+          <p class="eyebrow" data-i18n="contentEyebrow">NOTES</p>
+          <h2 data-i18n="contentTitle">首页内容摘要</h2>
+        </div>
+        <div id="contentList" class="grid compact-grid"></div>
+      </section>
+
+      <section id="connect" class="section connect-section">
+        <div class="connect-copy">
+          <p class="eyebrow" data-i18n="connectEyebrow">CONNECT</p>
+          <h2 data-i18n="connectTitle">付款、票务、发货或合作问题，都从这里联系。</h2>
+          <p data-i18n="connectCopy">
+            这个入口不是 Join us，而是 LIVE LIFE 的统一消息入口。比如付款后没有收到货、CD/Shop 发货问题、活动合作、投稿，都可以从这里发消息。
+          </p>
+        </div>
+        <form id="connectForm" class="connect-form">
           <label>
             <span data-i18n="labelNickname">昵称</span>
-            <input name="nickname" placeholder="LiveLife 朋友" data-i18n-placeholder="placeholderNickname" required />
+            <input name="nickname" placeholder="LIVE LIFE 朋友" data-i18n-placeholder="placeholderNickname" required />
           </label>
           <label>
             <span data-i18n="labelEmail">邮箱</span>
             <input name="email" type="email" placeholder="you@example.com" data-i18n-placeholder="placeholderEmail" required />
           </label>
           <label>
-            <span data-i18n="labelRole">身份</span>
-            <input name="role" placeholder="观众 / 音乐人 / 店铺 / 工作人员" data-i18n-placeholder="placeholderRole" />
+            <span data-i18n="labelTopic">问题类型</span>
+            <select name="topic">
+              <option value="ticket" data-i18n="topicTicket">票务</option>
+              <option value="cd-shop" data-i18n="topicCdShop">CD / Shop</option>
+              <option value="support" data-i18n="topicSupport">付款或发货问题</option>
+              <option value="collab" data-i18n="topicCollab">合作 / 投稿</option>
+            </select>
           </label>
           <label class="wide">
             <span data-i18n="labelMessage">留言</span>
-            <textarea name="message" rows="4" placeholder="你想和 LiveLife 一起做什么？" data-i18n-placeholder="placeholderMessage"></textarea>
+            <textarea name="message" rows="5" placeholder="请写下你遇到的问题或想联系 LIVE LIFE 的原因。" data-i18n-placeholder="placeholderMessage"></textarea>
           </label>
-          <button type="submit" data-i18n="submitButton">提交</button>
+          <button type="submit" data-i18n="submitButton">发送消息</button>
           <p id="formResult" class="form-result" role="status"></p>
         </form>
       </section>

@@ -19,8 +19,12 @@ func TestHealth(t *testing.T) {
 	if rec.Code != http.StatusOK {
 		t.Fatalf("expected status %d, got %d", http.StatusOK, rec.Code)
 	}
-	if !strings.Contains(rec.Body.String(), `"status":"ok"`) {
-		t.Fatalf("expected ok health response, got %s", rec.Body.String())
+	body := rec.Body.String()
+	if !strings.Contains(body, `"status":"ok"`) {
+		t.Fatalf("expected ok health response, got %s", body)
+	}
+	if !strings.Contains(body, `"brand":"LIVE LIFE"`) {
+		t.Fatalf("expected LIVE LIFE brand in health response, got %s", body)
 	}
 }
 
@@ -34,16 +38,37 @@ func TestEvents(t *testing.T) {
 	if rec.Code != http.StatusOK {
 		t.Fatalf("expected status %d, got %d", http.StatusOK, rec.Code)
 	}
-	if !strings.Contains(rec.Body.String(), "Tokyo Loop Night") {
-		t.Fatalf("expected seeded event, got %s", rec.Body.String())
+	body := rec.Body.String()
+	if !strings.Contains(body, "LIVE LIFE presents") {
+		t.Fatalf("expected LIVE LIFE owned event, got %s", body)
+	}
+	if !strings.Contains(body, "ownedEvents") {
+		t.Fatalf("expected ownedEvents group, got %s", body)
 	}
 }
 
-func TestJoinValidation(t *testing.T) {
+func TestCatalogEndpoints(t *testing.T) {
+	server := NewServer()
+	for _, path := range []string{"/api/cd-items", "/api/shop-items"} {
+		rec := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodGet, path, nil)
+
+		server.ServeHTTP(rec, req)
+
+		if rec.Code != http.StatusOK {
+			t.Fatalf("%s expected status %d, got %d", path, http.StatusOK, rec.Code)
+		}
+		if !strings.Contains(rec.Body.String(), `"brand":"LIVE LIFE"`) {
+			t.Fatalf("%s expected LIVE LIFE brand, got %s", path, rec.Body.String())
+		}
+	}
+}
+
+func TestConnectValidation(t *testing.T) {
 	server := NewServer()
 	body := bytes.NewBufferString(`{"nickname":"Local Tester","email":"not-an-email"}`)
 	rec := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodPost, "/api/join", body)
+	req := httptest.NewRequest(http.MethodPost, "/api/connect", body)
 
 	server.ServeHTTP(rec, req)
 
@@ -55,12 +80,12 @@ func TestJoinValidation(t *testing.T) {
 	}
 }
 
-func TestJoinAccepted(t *testing.T) {
+func TestConnectAccepted(t *testing.T) {
 	server := NewServer()
-	payload := JoinRequest{
+	payload := ConnectRequest{
 		Nickname: "Local Tester",
 		Email:    "local@example.com",
-		Role:     "viewer",
+		Topic:    "shop",
 		Message:  "Testing",
 	}
 	body, err := json.Marshal(payload)
@@ -68,14 +93,18 @@ func TestJoinAccepted(t *testing.T) {
 		t.Fatal(err)
 	}
 	rec := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodPost, "/api/join", bytes.NewReader(body))
+	req := httptest.NewRequest(http.MethodPost, "/api/connect", bytes.NewReader(body))
 
 	server.ServeHTTP(rec, req)
 
 	if rec.Code != http.StatusAccepted {
 		t.Fatalf("expected status %d, got %d", http.StatusAccepted, rec.Code)
 	}
-	if !strings.Contains(rec.Body.String(), `"accepted":true`) {
-		t.Fatalf("expected accepted response, got %s", rec.Body.String())
+	response := rec.Body.String()
+	if !strings.Contains(response, `"accepted":true`) {
+		t.Fatalf("expected accepted response, got %s", response)
+	}
+	if !strings.Contains(response, `"brand":"LIVE LIFE"`) {
+		t.Fatalf("expected LIVE LIFE brand in accepted response, got %s", response)
 	}
 }
