@@ -8,6 +8,7 @@ VSCode / local Git
   -> Alibaba Cloud server bare Git repo over SSH port 2222
   -> post-receive hook
   -> /opt/livelife/app
+  -> background deploy script
   -> docker compose up -d --build
   -> Nginx serves live-life.asia
 ```
@@ -74,6 +75,11 @@ git push aliyun master
 ```
 
 The push output should show Docker Compose building and starting containers.
+The push output should return quickly and say that deployment started in the background. Watch progress on the server:
+
+```bash
+tail -f /opt/livelife/logs/deploy.log
+```
 
 ## Verify After Deploy
 
