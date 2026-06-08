@@ -5,9 +5,12 @@ const translations = {
     navCDSelect: "CD 严选",
     navArchive: "档案",
     navConnect: "联系",
+    designLabel: "设计方案",
+    designV2: "V2 当前版",
+    designV3: "V3 乐队信号版",
     heroEyebrow: "TOKYO MUSIC INDEX",
     heroTitle: "LIVE LIFE 是东京现场、CD 严选和音乐档案入口。",
-    heroLead: "我们把 LIVE LIFE 自主演出、推荐现场、CD/黑胶严选、历史档案和售后联系整理成一个清楚的音乐入口。",
+    heroLead: "我们把 LIVE LIFE 自主演出、推荐现场、CD/黑胶严选、历史档案和售后联系整理成一个清晰的音乐入口。",
     heroPrimary: "看演出日程",
     heroSecondary: "进入 CD 严选",
     healthChecking: "正在检查 API",
@@ -63,38 +66,41 @@ const translations = {
   ja: {
     langAttr: "ja",
     navShows: "ライブ情報",
-    navCDSelect: "CDセレクト",
+    navCDSelect: "CD セレクト",
     navArchive: "アーカイブ",
     navConnect: "問い合わせ",
+    designLabel: "デザイン",
+    designV2: "V2 現行案",
+    designV3: "V3 バンド信号案",
     heroEyebrow: "TOKYO MUSIC INDEX",
-    heroTitle: "LIVE LIFE は東京のライブ、CDセレクト、音楽アーカイブの入口です。",
-    heroLead: "自主公演、おすすめライブ、CD/ヴァイナルセレクト、アーカイブ、問い合わせをひとつの音楽入口として整理します。",
+    heroTitle: "LIVE LIFE は東京のライブ、CD セレクト、音楽アーカイブの入口です。",
+    heroLead: "LIVE LIFE の自主公演、おすすめライブ、CD/ヴァイナルのセレクト、過去資料、問い合わせをひとつの音楽入口として整理します。",
     heroPrimary: "スケジュールを見る",
-    heroSecondary: "CDセレクトへ",
+    heroSecondary: "CD セレクトへ",
     healthChecking: "API 確認中",
     healthOnline: "API 接続済み",
     healthOffline: "API 未接続",
     scheduleEyebrow: "SCHEDULE",
     scheduleTitle: "近日予定",
     entryShows: "ライブ情報",
-    entryCDSelect: "CDセレクト",
+    entryCDSelect: "CD セレクト",
     entryArchive: "アーカイブ",
     entryConnect: "問い合わせ",
     showsEyebrow: "SHOWS",
     showsTitle: "ライブ情報",
-    showsNote: "LIVE LIFE の自主公演を最上部に固定し、おすすめ公演と過去ビジュアルは下に分けて表示します。",
+    showsNote: "LIVE LIFE の自主公演を最上部に固定し、おすすめ公演と過去ビジュアルを下に配置します。",
     cdEyebrow: "CD SELECT",
-    cdTitle: "CDセレクト",
-    cdCopy: "CD とヴァイナルに分けます。詳細内の購入ボタンは BASE など外部ショップへ遷移します。",
+    cdTitle: "CD セレクト",
+    cdCopy: "CD とヴァイナルに分けます。詳細内の購入ボタンは BASE など外部 Shop へ移動します。",
     formatAll: "すべて",
     formatCD: "CD",
     formatVinyl: "ヴァイナル",
     archiveEyebrow: "ARCHIVE",
     archiveTitle: "アーカイブ",
-    archiveCopy: "過去フライヤー、公開情報メモ、写真、推薦記事などをここに集約します。",
+    archiveCopy: "過去フライヤー、公開資料メモ、写真、推薦記事などをここに集約します。",
     connectEyebrow: "CONNECT",
     connectTitle: "チケット、購入、発送、コラボの相談はこちらから。",
-    connectCopy: "外部ショップ購入後の未着、CD/ヴァイナル購入相談、チケット、イベント協力、投稿などを LIVE LIFE に送れます。",
+    connectCopy: "外部 Shop 購入後の未着、CD/ヴァイナル購入相談、チケット、イベント協力、投稿などを LIVE LIFE に送れます。",
     labelNickname: "ニックネーム",
     labelEmail: "メール",
     labelTopic: "問い合わせ種別",
@@ -103,7 +109,7 @@ const translations = {
     placeholderEmail: "you@example.com",
     placeholderMessage: "困っていること、または LIVE LIFE に連絡したい内容を書いてください。",
     topicTicket: "チケット",
-    topicCDSelect: "CDセレクト",
+    topicCDSelect: "CD セレクト",
     topicSupport: "購入・発送",
     topicCollab: "協力 / 投稿",
     submitButton: "送信",
@@ -119,7 +125,7 @@ const translations = {
     scheduleCD: "CD",
     scheduleVinyl: "VINYL",
     viewDetail: "詳細を見る",
-    externalShopNote: "購入は外部ショップへ移動します",
+    externalShopNote: "購入は外部 Shop へ移動します",
   },
   en: {
     langAttr: "en",
@@ -127,9 +133,12 @@ const translations = {
     navCDSelect: "CD SELECT",
     navArchive: "ARCHIVE",
     navConnect: "CONNECT",
+    designLabel: "DESIGN",
+    designV2: "V2 CURRENT",
+    designV3: "V3 BAND SIGNAL",
     heroEyebrow: "TOKYO MUSIC INDEX",
     heroTitle: "LIVE LIFE IS AN ENTRY POINT FOR TOKYO SHOWS, CD SELECT, AND MUSIC ARCHIVES.",
-    heroLead: "WE ORGANIZE OWNED SHOWS, RECOMMENDED LIVE DATES, CD/VINYL SELECT, ARCHIVES, AND SUPPORT MESSAGES INTO ONE CLEAR MUSIC INDEX.",
+    heroLead: "WE ORGANIZE LIVE LIFE OWNED SHOWS, RECOMMENDED LIVE DATES, CD/VINYL SELECT, ARCHIVES, AND SUPPORT MESSAGES INTO ONE CLEAR MUSIC INDEX.",
     heroPrimary: "VIEW SCHEDULE",
     heroSecondary: "ENTER CD SELECT",
     healthChecking: "CHECKING API",
@@ -194,29 +203,31 @@ const cdList = document.querySelector("#cdList");
 const contentList = document.querySelector("#contentList");
 const connectForm = document.querySelector("#connectForm");
 const formResult = document.querySelector("#formResult");
+const designSelect = document.querySelector("#designSelect");
 const languageButtons = Array.from(document.querySelectorAll(".language-button"));
 const formatTabs = Array.from(document.querySelectorAll(".format-tab"));
 
 let currentLanguage = "zh";
+let currentDesign = readInitialDesign();
 let currentFormat = "all";
 let cachedEvents = [];
 let cachedCatalogItems = [];
 let cachedContents = [];
 let lastHealth = null;
 
-// 统一读取 UI 翻译。缺失时先回退中文，避免切语言后出现空白。
+// 统一读取静态 UI 文案。缺少某个语言时先回退中文，避免切换语言后出现空白。
 function t(key) {
   return translations[currentLanguage]?.[key] || translations.zh[key] || key;
 }
 
-// 读取 API 返回的三语言字段，例如 titleI18n、summaryI18n、ticketNoteI18n。
+// API 的可展示字段统一采用 titleI18n、summaryI18n、ticketNoteI18n 这类三语言结构。
+// 前端只按当前语言取值，不在页面层手写业务文案，方便后续接后台管理系统。
 function localizedText(item, field) {
   const i18n = item[`${field}I18n`];
   return i18n?.[currentLanguage] || i18n?.zh || item[field] || "";
 }
 
-// 有些 API 字段本身就是三语言对象，不再带 I18n 后缀。
-// 例如 purchaseText: { zh: "点击此处购买", ja: "こちらから購入", en: "BUY HERE" }。
+// purchaseText 这种字段本身就是三语言 map，不再拼 I18n 后缀。
 function localizedMap(value) {
   if (!value || typeof value !== "object") {
     return "";
@@ -241,7 +252,42 @@ async function getJSON(url) {
   return response.json();
 }
 
-// 切换语言时，静态文案、placeholder、Schedule、演出卡片和 CD 严选卡片都要重渲染。
+// V2/V3 只是页面视觉方案，后端 API、数据结构、业务逻辑保持同一套。
+// 这样将来给客户 review 时，可以在右上角切换方案，不需要开分支或维护多套接口。
+function readInitialDesign() {
+  const params = new URLSearchParams(window.location.search);
+  const fromUrl = params.get("design");
+  if (fromUrl === "v2" || fromUrl === "v3") {
+    return fromUrl;
+  }
+  try {
+    const stored = window.localStorage.getItem("liveLifeDesignVariant");
+    return stored === "v3" ? "v3" : "v2";
+  } catch {
+    return "v2";
+  }
+}
+
+function applyDesign(design, options = { updateUrl: true }) {
+  currentDesign = design === "v3" ? "v3" : "v2";
+  document.body.dataset.design = currentDesign;
+  if (designSelect) {
+    designSelect.value = currentDesign;
+  }
+  try {
+    window.localStorage.setItem("liveLifeDesignVariant", currentDesign);
+  } catch {
+    // 本地预览里 localStorage 不可用也不影响展示。
+  }
+  if (options.updateUrl) {
+    const url = new URL(window.location.href);
+    url.searchParams.set("design", currentDesign);
+    url.searchParams.set("v", "20260608-db-v3");
+    window.history.replaceState({}, "", url);
+  }
+}
+
+// 切换语言时，静态文案、placeholder、演出卡片、CD 卡片、Archive 和 Schedule 都要重渲染。
 function applyLanguage(language) {
   currentLanguage = translations[language] ? language : "zh";
   document.documentElement.lang = t("langAttr");
@@ -282,7 +328,7 @@ function renderSchedule() {
     date: "TBD",
     title: localizedText(item, "title"),
     meta: item.artist,
-    status: item.status,
+    status: item.status || item.price || "TBD",
   }));
 
   const items = [...liveItems, ...catalogItems];
@@ -368,8 +414,9 @@ function renderContents(contents) {
   `).join("");
 }
 
-// 页面启动时加载健康检查、演出、CD 严选和 Archive 摘要。
+// 页面启动时，先应用默认中文和设计方案，再并行加载健康检查、演出、CD 严选和 Archive。
 async function boot() {
+  applyDesign(currentDesign, { updateUrl: false });
   applyLanguage(currentLanguage);
 
   try {
@@ -406,6 +453,10 @@ languageButtons.forEach((button) => {
   button.addEventListener("click", () => applyLanguage(button.dataset.lang));
 });
 
+designSelect.addEventListener("change", () => {
+  applyDesign(designSelect.value);
+});
+
 formatTabs.forEach((button) => {
   button.addEventListener("click", () => {
     currentFormat = button.dataset.format;
@@ -414,7 +465,7 @@ formatTabs.forEach((button) => {
   });
 });
 
-// Connect 表单当前只做本地 API 验证，未来可以在后端接邮件、数据库或客服系统。
+// Connect 表单现在先写入本地 SQLite，后续可以在后端继续接邮件通知、客服系统或后台管理列表。
 connectForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   formResult.textContent = t("submitting");

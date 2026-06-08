@@ -3,26 +3,29 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
+
+	"github.com/glebarez/sqlite"
+	"gorm.io/gorm"
 )
 
 const brandName = "LIVE LIFE"
 
 // LocalizedText 保存对外展示文案的三语言版本。
-//
-// 当前产品默认中文，同时支持日语和英语。后端直接返回三语言文案，
-// 前端只需要按照当前界面语言读取对应字段，后续接数据库时也能沿用这个结构。
+// 当前默认语言是中文，同时支持日本语和 English。
+// 后端保留完整三语言数据，前端根据当前界面语言选择对应字段。
 type LocalizedText map[string]string
 
-// Event 是演出情报数据结构。
-//
-// Owned=true 表示 LIVE LIFE 自主演出，前端会把它固定展示在演出情报最上方。
-// TicketNote 用来说明票务状态；目前演出票务先跳外部票站，不做站内支付。
+// Event 是 /api/events 对外返回的数据结构。
+// 注意它是 API DTO，不是数据库表模型。这样前端视觉从 V2 切到 V3 时，
+// 后端数据库模型可以保持稳定，API 也不用因为布局变化而改变。
 type Event struct {
 	ID             string        `json:"id"`
 	Brand          string        `json:"brand"`
@@ -47,11 +50,8 @@ type Event struct {
 	SourceNoteI18n LocalizedText `json:"sourceNoteI18n"`
 }
 
-// CatalogItem 是 CD 严选里的单品数据结构。
-//
-// 注意：现在没有顶层 Shop 页面。商业路径是：
-// CD 严选列表 -> 单品详情 -> “点击此处购买”按钮 -> 外部 Shop，比如 BASE。
-// Format 用来区分 CD / vinyl，PurchaseURL 是外部购买链接。
+// CatalogItem 是 /api/cd-items 对外返回的数据结构。
+// 这里覆盖 CD 严选里的 CD 和黑胶。购买按钮只跳外部 Shop，不做站内订单。
 type CatalogItem struct {
 	ID           string        `json:"id"`
 	Brand        string        `json:"brand"`
@@ -69,10 +69,8 @@ type CatalogItem struct {
 	PurchaseText LocalizedText `json:"purchaseText"`
 }
 
-// ContentItem 是 Archive / 内容摘要入口。
-//
-// Archive 用来承接历史海报、照片、文章、公开资料备注等内容，
-// 避免把它们混进演出情报或 CD 严选购买流程。
+// ContentItem 是 /api/contents 对外返回的数据结构。
+// Archive、设计备注、历史海报说明等都先归到这里，避免混进演出或购买流程。
 type ContentItem struct {
 	ID          string        `json:"id"`
 	Brand       string        `json:"brand"`
@@ -84,9 +82,7 @@ type ContentItem struct {
 }
 
 // ConnectRequest 是 Connect 表单提交的数据。
-//
-// 这个表单是统一联系入口，可以处理票务、外部购买后未收到货、发货、
-// 合作、投稿等问题。当前阶段只做本地 API 验证，后续可接邮件或客服系统。
+// 它承接票务、外部购买未收到货、发货、合作、投稿等问题。
 type ConnectRequest struct {
 	Nickname string `json:"nickname"`
 	Email    string `json:"email"`
@@ -98,14 +94,139 @@ type ErrorResponse struct {
 	Error string `json:"error"`
 }
 
+// 下面这些 Model 是数据库表模型。
+// 目前用 GORM + SQLite 做完整数据链路：数据库 -> ORM -> API DTO -> 前端。
+// 它们不直接暴露给前端，避免未来数据库调整影响 API。
+type EventModel struct {
+	ID           string `gorm:"primaryKey"`
+	Brand        string `gorm:"not null;default:LIVE LIFE"`
+	Owned        bool   `gorm:"not null;default:false;index"`
+	Category     string `gorm:"not null"`
+	Title        string `gorm:"not null"`
+	Date         string
+	Time         string
+	Venue        string
+	Area         string
+	Price        string
+	Summary      string
+	TicketNote   string
+	MapURL       string
+	ImageURL     string
+	SourceNote   string
+	DisplayOrder int
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
+	Translations []EventTranslationModel `gorm:"foreignKey:EventID"`
+	Lineup       []EventLineupModel      `gorm:"foreignKey:EventID"`
+	Tags         []EventTagModel         `gorm:"foreignKey:EventID"`
+}
+
+type EventTranslationModel struct {
+	EventID    string `gorm:"primaryKey"`
+	Lang       string `gorm:"primaryKey"`
+	Title      string
+	Summary    string
+	TicketNote string
+	SourceNote string
+}
+
+type EventLineupModel struct {
+	ID           uint `gorm:"primaryKey"`
+	EventID      string
+	Name         string `gorm:"not null"`
+	Role         string
+	DisplayOrder int
+}
+
+type EventTagModel struct {
+	ID           uint `gorm:"primaryKey"`
+	EventID      string
+	Tag          string `gorm:"not null"`
+	DisplayOrder int
+}
+
+type CatalogItemModel struct {
+	ID           string `gorm:"primaryKey"`
+	Brand        string `gorm:"not null;default:LIVE LIFE"`
+	Format       string `gorm:"not null;index"`
+	Artist       string `gorm:"not null"`
+	Title        string `gorm:"not null"`
+	Summary      string
+	Status       string
+	Price        string
+	ImageURL     string
+	PurchaseURL  string
+	DisplayOrder int
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
+	Translations []CatalogItemTranslationModel `gorm:"foreignKey:ItemID"`
+	Tracks       []CatalogItemTrackModel       `gorm:"foreignKey:ItemID"`
+}
+
+type CatalogItemTranslationModel struct {
+	ItemID       string `gorm:"primaryKey"`
+	Lang         string `gorm:"primaryKey"`
+	Title        string
+	Summary      string
+	PurchaseText string
+}
+
+type CatalogItemTrackModel struct {
+	ID           uint `gorm:"primaryKey"`
+	ItemID       string
+	SideLabel    string
+	Position     int
+	Title        string `gorm:"not null"`
+	DurationText string
+}
+
+type ContentItemModel struct {
+	ID           string `gorm:"primaryKey"`
+	Brand        string `gorm:"not null;default:LIVE LIFE"`
+	Type         string `gorm:"not null;index"`
+	Title        string `gorm:"not null"`
+	Summary      string
+	DisplayOrder int
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
+	Translations []ContentTranslationModel `gorm:"foreignKey:ContentID"`
+}
+
+type ContentTranslationModel struct {
+	ContentID string `gorm:"primaryKey"`
+	Lang      string `gorm:"primaryKey"`
+	Title     string
+	Summary   string
+}
+
+type ConnectMessageModel struct {
+	ID           string `gorm:"primaryKey"`
+	Brand        string `gorm:"not null;default:LIVE LIFE"`
+	Nickname     string `gorm:"not null"`
+	Email        string `gorm:"not null"`
+	Topic        string `gorm:"not null;index"`
+	Message      string
+	Status       string `gorm:"not null;default:new;index"`
+	UserLocale   string
+	SourcePage   string
+	InternalNote string
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
+	HandledAt    *time.Time
+}
+
 type Server struct {
 	mux    *http.ServeMux
 	static http.Handler
+	db     *gorm.DB
 }
 
 func main() {
 	port := getenv("BACKEND_PORT", getenv("PORT", "8080"))
-	server := NewServer()
+	server, err := NewFileServer(defaultDatabasePath())
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	log.Printf("%s local server listening on http://localhost:%s", brandName, port)
 	if err := http.ListenAndServe(":"+port, server); err != nil {
@@ -113,13 +234,39 @@ func main() {
 	}
 }
 
+// NewServer 保持测试兼容：默认使用内存 SQLite，测试不会污染本地文件。
 func NewServer() *Server {
+	server, err := newServer(":memory:")
+	if err != nil {
+		panic(err)
+	}
+	return server
+}
+
+// NewFileServer 给本地预览和未来部署使用，会把数据落到 SQLite 文件。
+func NewFileServer(databasePath string) (*Server, error) {
+	return newServer(databasePath)
+}
+
+func newServer(databasePath string) (*Server, error) {
+	db, err := openDatabase(databasePath)
+	if err != nil {
+		return nil, err
+	}
+	if err := migrateDatabase(db); err != nil {
+		return nil, err
+	}
+	if err := seedDatabase(db); err != nil {
+		return nil, err
+	}
+
 	mux := http.NewServeMux()
 	staticDir := filepath.Join(".", "static")
 
 	s := &Server{
 		mux:    mux,
 		static: http.FileServer(http.Dir(staticDir)),
+		db:     db,
 	}
 
 	mux.HandleFunc("GET /api/health", s.handleHealth)
@@ -130,7 +277,182 @@ func NewServer() *Server {
 	mux.HandleFunc("POST /api/join", s.handleConnect)
 	mux.HandleFunc("/", s.handleStatic)
 
-	return s
+	return s, nil
+}
+
+func openDatabase(databasePath string) (*gorm.DB, error) {
+	if databasePath != ":memory:" {
+		if err := os.MkdirAll(filepath.Dir(databasePath), 0o755); err != nil {
+			return nil, err
+		}
+	}
+
+	db, err := gorm.Open(sqlite.Open(databasePath), &gorm.Config{})
+	if err != nil {
+		return nil, err
+	}
+	if err := db.Exec("PRAGMA foreign_keys = ON").Error; err != nil {
+		return nil, err
+	}
+	return db, nil
+}
+
+func migrateDatabase(db *gorm.DB) error {
+	return db.AutoMigrate(
+		&EventModel{},
+		&EventTranslationModel{},
+		&EventLineupModel{},
+		&EventTagModel{},
+		&CatalogItemModel{},
+		&CatalogItemTranslationModel{},
+		&CatalogItemTrackModel{},
+		&ContentItemModel{},
+		&ContentTranslationModel{},
+		&ConnectMessageModel{},
+	)
+}
+
+func seedDatabase(db *gorm.DB) error {
+	var count int64
+	if err := db.Model(&EventModel{}).Count(&count).Error; err != nil {
+		return err
+	}
+	if count > 0 {
+		return nil
+	}
+
+	return db.Transaction(func(tx *gorm.DB) error {
+		for index, event := range seedEvents() {
+			if err := createSeedEvent(tx, event, index); err != nil {
+				return err
+			}
+		}
+		for index, item := range seedCDItems() {
+			if err := createSeedCatalogItem(tx, item, index); err != nil {
+				return err
+			}
+		}
+		for index, item := range seedContents() {
+			if err := createSeedContent(tx, item, index); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}
+
+func createSeedEvent(tx *gorm.DB, event Event, order int) error {
+	model := EventModel{
+		ID:           event.ID,
+		Brand:        event.Brand,
+		Owned:        event.Owned,
+		Category:     event.Category,
+		Title:        event.Title,
+		Date:         event.Date,
+		Time:         event.Time,
+		Venue:        event.Venue,
+		Area:         event.Area,
+		Price:        event.Price,
+		Summary:      event.Summary,
+		TicketNote:   event.TicketNote,
+		MapURL:       event.MapURL,
+		ImageURL:     event.ImageURL,
+		SourceNote:   event.SourceNote,
+		DisplayOrder: order,
+	}
+	if err := tx.Create(&model).Error; err != nil {
+		return err
+	}
+	for lang, title := range event.TitleI18n {
+		translation := EventTranslationModel{
+			EventID:    event.ID,
+			Lang:       lang,
+			Title:      title,
+			Summary:    event.SummaryI18n[lang],
+			TicketNote: event.TicketNoteI18n[lang],
+			SourceNote: event.SourceNoteI18n[lang],
+		}
+		if err := tx.Create(&translation).Error; err != nil {
+			return err
+		}
+	}
+	for index, name := range event.Lineup {
+		lineup := EventLineupModel{EventID: event.ID, Name: name, DisplayOrder: index}
+		if err := tx.Create(&lineup).Error; err != nil {
+			return err
+		}
+	}
+	for index, tag := range event.Tags {
+		tagModel := EventTagModel{EventID: event.ID, Tag: tag, DisplayOrder: index}
+		if err := tx.Create(&tagModel).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func createSeedCatalogItem(tx *gorm.DB, item CatalogItem, order int) error {
+	model := CatalogItemModel{
+		ID:           item.ID,
+		Brand:        item.Brand,
+		Format:       item.Format,
+		Artist:       item.Artist,
+		Title:        item.Title,
+		Summary:      item.Summary,
+		Status:       item.Status,
+		Price:        item.Price,
+		ImageURL:     item.ImageURL,
+		PurchaseURL:  item.PurchaseURL,
+		DisplayOrder: order,
+	}
+	if err := tx.Create(&model).Error; err != nil {
+		return err
+	}
+	for lang, title := range item.TitleI18n {
+		translation := CatalogItemTranslationModel{
+			ItemID:       item.ID,
+			Lang:         lang,
+			Title:        title,
+			Summary:      item.SummaryI18n[lang],
+			PurchaseText: item.PurchaseText[lang],
+		}
+		if err := tx.Create(&translation).Error; err != nil {
+			return err
+		}
+	}
+	for index, track := range item.Tracks {
+		trackModel := CatalogItemTrackModel{ItemID: item.ID, Position: index + 1, Title: track}
+		if err := tx.Create(&trackModel).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func createSeedContent(tx *gorm.DB, item ContentItem, order int) error {
+	model := ContentItemModel{
+		ID:           item.ID,
+		Brand:        item.Brand,
+		Type:         item.Type,
+		Title:        item.Title,
+		Summary:      item.Summary,
+		DisplayOrder: order,
+	}
+	if err := tx.Create(&model).Error; err != nil {
+		return err
+	}
+	for lang, title := range item.TitleI18n {
+		translation := ContentTranslationModel{
+			ContentID: item.ID,
+			Lang:      lang,
+			Title:     title,
+			Summary:   item.SummaryI18n[lang],
+		}
+		if err := tx.Create(&translation).Error; err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -157,7 +479,11 @@ func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleEvents(w http.ResponseWriter, r *http.Request) {
-	events := seedEvents()
+	events, err := s.listEvents()
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to load events")
+		return
+	}
 	writeJSON(w, http.StatusOK, map[string]any{
 		"brand":             brandName,
 		"events":            events,
@@ -167,7 +493,11 @@ func (s *Server) handleEvents(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleCDItems(w http.ResponseWriter, r *http.Request) {
-	items := seedCDItems()
+	items, err := s.listCatalogItems()
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to load catalog items")
+		return
+	}
 	writeJSON(w, http.StatusOK, map[string]any{
 		"brand": brandName,
 		"items": items,
@@ -177,9 +507,14 @@ func (s *Server) handleCDItems(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleContents(w http.ResponseWriter, r *http.Request) {
+	contents, err := s.listContents()
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to load contents")
+		return
+	}
 	writeJSON(w, http.StatusOK, map[string]any{
 		"brand":    brandName,
-		"contents": seedContents(),
+		"contents": contents,
 	})
 }
 
@@ -202,10 +537,27 @@ func (s *Server) handleConnect(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	message := ConnectMessageModel{
+		ID:        fmt.Sprintf("conn_%d", time.Now().UTC().UnixNano()),
+		Brand:     brandName,
+		Nickname:  req.Nickname,
+		Email:     req.Email,
+		Topic:     req.Topic,
+		Message:   req.Message,
+		Status:    "new",
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
+	}
+	if err := s.db.Create(&message).Error; err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to save connect message")
+		return
+	}
+
 	writeJSON(w, http.StatusAccepted, map[string]any{
-		"accepted": true,
-		"brand":    brandName,
-		"message":  "LIVE LIFE received your message.",
+		"accepted":  true,
+		"brand":     brandName,
+		"message":   "LIVE LIFE received your message.",
+		"messageId": message.ID,
 	})
 }
 
@@ -224,6 +576,147 @@ func (s *Server) handleStatic(w http.ResponseWriter, r *http.Request) {
 	s.static.ServeHTTP(w, r)
 }
 
+func (s *Server) listEvents() ([]Event, error) {
+	var models []EventModel
+	err := s.db.
+		Preload("Translations").
+		Preload("Lineup").
+		Preload("Tags").
+		Order("owned DESC").
+		Order("display_order ASC").
+		Order("id ASC").
+		Find(&models).Error
+	if err != nil {
+		return nil, err
+	}
+
+	events := make([]Event, 0, len(models))
+	for _, model := range models {
+		sort.Slice(model.Lineup, func(i, j int) bool {
+			return model.Lineup[i].DisplayOrder < model.Lineup[j].DisplayOrder
+		})
+		sort.Slice(model.Tags, func(i, j int) bool {
+			return model.Tags[i].DisplayOrder < model.Tags[j].DisplayOrder
+		})
+
+		event := Event{
+			ID:             model.ID,
+			Brand:          model.Brand,
+			Owned:          model.Owned,
+			Category:       model.Category,
+			Title:          model.Title,
+			TitleI18n:      LocalizedText{},
+			Date:           model.Date,
+			Time:           model.Time,
+			Venue:          model.Venue,
+			Area:           model.Area,
+			Price:          model.Price,
+			Tags:           []string{},
+			Summary:        model.Summary,
+			SummaryI18n:    LocalizedText{},
+			Lineup:         []string{},
+			TicketNote:     model.TicketNote,
+			TicketNoteI18n: LocalizedText{},
+			MapURL:         model.MapURL,
+			ImageURL:       model.ImageURL,
+			SourceNote:     model.SourceNote,
+			SourceNoteI18n: LocalizedText{},
+		}
+		for _, translation := range model.Translations {
+			event.TitleI18n[translation.Lang] = translation.Title
+			event.SummaryI18n[translation.Lang] = translation.Summary
+			event.TicketNoteI18n[translation.Lang] = translation.TicketNote
+			event.SourceNoteI18n[translation.Lang] = translation.SourceNote
+		}
+		for _, lineup := range model.Lineup {
+			event.Lineup = append(event.Lineup, lineup.Name)
+		}
+		for _, tag := range model.Tags {
+			event.Tags = append(event.Tags, tag.Tag)
+		}
+		events = append(events, event)
+	}
+	return events, nil
+}
+
+func (s *Server) listCatalogItems() ([]CatalogItem, error) {
+	var models []CatalogItemModel
+	err := s.db.
+		Preload("Translations").
+		Preload("Tracks").
+		Order("display_order ASC").
+		Order("id ASC").
+		Find(&models).Error
+	if err != nil {
+		return nil, err
+	}
+
+	items := make([]CatalogItem, 0, len(models))
+	for _, model := range models {
+		sort.Slice(model.Tracks, func(i, j int) bool {
+			return model.Tracks[i].Position < model.Tracks[j].Position
+		})
+
+		item := CatalogItem{
+			ID:           model.ID,
+			Brand:        model.Brand,
+			Format:       model.Format,
+			Artist:       model.Artist,
+			Title:        model.Title,
+			TitleI18n:    LocalizedText{},
+			Summary:      model.Summary,
+			SummaryI18n:  LocalizedText{},
+			Tracks:       []string{},
+			Status:       model.Status,
+			Price:        model.Price,
+			ImageURL:     model.ImageURL,
+			PurchaseURL:  model.PurchaseURL,
+			PurchaseText: LocalizedText{},
+		}
+		for _, translation := range model.Translations {
+			item.TitleI18n[translation.Lang] = translation.Title
+			item.SummaryI18n[translation.Lang] = translation.Summary
+			item.PurchaseText[translation.Lang] = translation.PurchaseText
+		}
+		for _, track := range model.Tracks {
+			item.Tracks = append(item.Tracks, track.Title)
+		}
+		items = append(items, item)
+	}
+	return items, nil
+}
+
+func (s *Server) listContents() ([]ContentItem, error) {
+	var models []ContentItemModel
+	err := s.db.
+		Preload("Translations").
+		Order("display_order ASC").
+		Order("id ASC").
+		Find(&models).Error
+	if err != nil {
+		return nil, err
+	}
+
+	contents := make([]ContentItem, 0, len(models))
+	for _, model := range models {
+		item := ContentItem{
+			ID:          model.ID,
+			Brand:       model.Brand,
+			Type:        model.Type,
+			Title:       model.Title,
+			TitleI18n:   LocalizedText{},
+			Summary:     model.Summary,
+			SummaryI18n: LocalizedText{},
+		}
+		for _, translation := range model.Translations {
+			item.TitleI18n[translation.Lang] = translation.Title
+			item.SummaryI18n[translation.Lang] = translation.Summary
+		}
+		contents = append(contents, item)
+	}
+	return contents, nil
+}
+
 func validateConnectRequest(req ConnectRequest) error {
 	if req.Nickname == "" {
 		return errors.New("nickname is required")
@@ -233,6 +726,9 @@ func validateConnectRequest(req ConnectRequest) error {
 	}
 	if !strings.Contains(req.Email, "@") {
 		return errors.New("email is invalid")
+	}
+	if req.Topic == "" {
+		return errors.New("topic is required")
 	}
 	return nil
 }
@@ -429,7 +925,7 @@ func seedContents() []ContentItem {
 			Summary: "The homepage uses real band names as cultural texture and abstract music production tracks as data flow.",
 			SummaryI18n: LocalizedText{
 				"zh": "首页纹理使用真实乐队名作为文化坐标，同时用抽象音轨、波形和采样轨道替代代码/二进制。",
-				"ja": "ホームのテクスチャは実在バンド名を文化的座標として使い、コードやバイナリの代わりに抽象的な音轨、波形、サンプルトラックを使います。",
+				"ja": "ホームのテクスチャは実在バンド名を文化的座標として使い、コードやバイナリの代わりに抽象的な音軌、波形、サンプルトラックを使います。",
 				"en": "THE HOMEPAGE USES REAL BAND NAMES AS CULTURAL TEXTURE, WITH ABSTRACT TRACK LANES AND WAVEFORM-STYLE DATA INSTEAD OF CODE OR BINARY.",
 			},
 		},
@@ -446,6 +942,13 @@ func writeJSON(w http.ResponseWriter, status int, value any) {
 
 func writeError(w http.ResponseWriter, status int, message string) {
 	writeJSON(w, status, ErrorResponse{Error: message})
+}
+
+func defaultDatabasePath() string {
+	if path := os.Getenv("DATABASE_PATH"); path != "" {
+		return path
+	}
+	return filepath.Join("data", "livelife.dev.db")
 }
 
 func getenv(key, fallback string) string {

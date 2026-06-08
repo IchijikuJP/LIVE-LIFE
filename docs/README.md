@@ -56,6 +56,7 @@
 
 - [alicloud-tokyo-p0-status.md](alicloud-tokyo-p0-status.md)
 - [alicloud-tokyo-p0-deployment.md](alicloud-tokyo-p0-deployment.md)
+- [cicd-git-push-deploy.md](cicd-git-push-deploy.md)
 
 用途：
 

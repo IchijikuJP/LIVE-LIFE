@@ -1,7 +1,7 @@
 FROM golang:1.24-bookworm AS build
 
 WORKDIR /src
-COPY go.mod ./
+COPY go.mod go.sum ./
 COPY cmd ./cmd
 RUN go build -o /out/livelife-api ./cmd/server
 

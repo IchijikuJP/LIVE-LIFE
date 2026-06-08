@@ -120,4 +120,12 @@ func TestConnectAccepted(t *testing.T) {
 	if !strings.Contains(response, `"brand":"LIVE LIFE"`) {
 		t.Fatalf("expected LIVE LIFE brand in accepted response, got %s", response)
 	}
+
+	var count int64
+	if err := server.db.Model(&ConnectMessageModel{}).Count(&count).Error; err != nil {
+		t.Fatalf("expected connect message query to succeed: %v", err)
+	}
+	if count != 1 {
+		t.Fatalf("expected one persisted connect message, got %d", count)
+	}
 }

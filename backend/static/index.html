@@ -4,21 +4,31 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>LIVE LIFE 本地预览</title>
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/styles.css?v=20260608-db-v3" />
   </head>
-  <body>
+  <body data-design="v2">
     <header class="topbar">
       <a class="brand" href="#home" aria-label="LIVE LIFE">
         <span class="brand-mark" aria-hidden="true"></span>
         <span>LIVE LIFE</span>
       </a>
+
       <div class="topbar-actions">
-        <nav aria-label="Primary">
+        <nav aria-label="Primary navigation">
           <a href="#shows" data-i18n="navShows">演出情报</a>
           <a href="#cd-select" data-i18n="navCDSelect">CD 严选</a>
           <a href="#archive" data-i18n="navArchive">档案</a>
           <a href="#connect" data-i18n="navConnect">联系</a>
         </nav>
+
+        <label class="design-switcher">
+          <span data-i18n="designLabel">设计方案</span>
+          <select id="designSelect" aria-label="Design version">
+            <option value="v2" data-i18n="designV2">V2 当前版</option>
+            <option value="v3" data-i18n="designV3">V3 乐队信号版</option>
+          </select>
+        </label>
+
         <div class="language-switcher" aria-label="语言选择">
           <button class="language-button active" type="button" data-lang="zh" aria-pressed="true">中文</button>
           <button class="language-button" type="button" data-lang="ja" aria-pressed="false">日本語</button>
@@ -31,10 +41,17 @@
       <section id="home" class="hero-grid">
         <div class="hero-stage">
           <div class="band-texture" aria-hidden="true">
-            THE SMITHS / OASIS / BLUR / RADIOHEAD / PULP / SUEDE / JOY DIVISION / NEW ORDER /
-            THE CURE / STONE ROSES / MY BLOODY VALENTINE / SLOWDIVE / PRIMAL SCREAM /
-            MASSIVE ATTACK / PORTISHEAD / SONIC YOUTH / PIXIES
+            THE SMITHS OASIS BLUR RADIOHEAD PULP SUEDE JOY DIVISION NEW ORDER THE CURE STONE ROSES MY BLOODY VALENTINE SLOWDIVE PRIMAL SCREAM MASSIVE ATTACK PORTISHEAD SONIC YOUTH PIXIES
           </div>
+
+          <div class="v3-brand-signal" aria-hidden="true">
+            <div class="v3-band-cloud">
+              THE BEATLES THE ROLLING STONES LED ZEPPELIN PINK FLOYD QUEEN THE WHO DAVID BOWIE THE KINKS T. REX ROXY MUSIC THE CLASH SEX PISTOLS THE JAM BUZZCOCKS JOY DIVISION NEW ORDER THE SMITHS THE CURE SIOUXSIE AND THE BANSHEES ECHO AND THE BUNNYMEN THE STONE ROSES MY BLOODY VALENTINE SLOWDIVE PRIMAL SCREAM RADIOHEAD OASIS BLUR SUEDE PULP THE VERVE ARCTIC MONKEYS NIRVANA PIXIES SONIC YOUTH R.E.M. THE STOOGES THE VELVET UNDERGROUND TALKING HEADS
+            </div>
+            <div class="v3-marquee-row row-one">LIVE LIFE LIVE LIFE LIVE LIFE LIVE LIFE LIVE LIFE LIVE LIFE LIVE LIFE</div>
+            <div class="v3-marquee-row row-two">L I V E L I F E L I V E L I F E L I V E L I F E L I V E L I F E</div>
+          </div>
+
           <div class="track-field" aria-hidden="true">
             <span class="lane lane-a"></span>
             <span class="lane lane-b"></span>
@@ -44,11 +61,24 @@
             <span class="wave wave-a"></span>
             <span class="wave wave-b"></span>
           </div>
+
+          <div class="v3-track-field" aria-hidden="true">
+            <span class="track-row row-a"></span>
+            <span class="track-row row-b"></span>
+            <span class="track-row row-c"></span>
+            <span class="track-row row-d"></span>
+            <span class="track-block block-a"></span>
+            <span class="track-block block-b"></span>
+            <span class="track-block block-c"></span>
+            <span class="track-meter meter-a"></span>
+            <span class="track-meter meter-b"></span>
+          </div>
+
           <div class="hero-lockup">
             <p class="eyebrow" data-i18n="heroEyebrow">TOKYO MUSIC INDEX</p>
             <h1 data-i18n="heroTitle">LIVE LIFE 是东京现场、CD 严选和音乐档案入口。</h1>
             <p class="lead" data-i18n="heroLead">
-              我们把 LIVE LIFE 自主演出、推荐现场、CD/黑胶严选、历史档案和售后联系整理成一个清楚的音乐入口。
+              我们把 LIVE LIFE 自主演出、推荐现场、CD/黑胶严选、历史档案和售后联系整理成一个清晰的音乐入口。
             </p>
             <div class="hero-actions">
               <a class="button primary" href="#shows" data-i18n="heroPrimary">看演出日程</a>
@@ -165,6 +195,6 @@
       </section>
     </main>
 
-    <script src="/app.js?v=20260607-v2"></script>
+    <script src="/app.js?v=20260608-db-v3"></script>
   </body>
 </html>
