@@ -9,7 +9,8 @@ VSCode / local Git
   -> post-receive hook
   -> /opt/livelife/app
   -> background deploy script
-  -> docker compose up -d --build
+  -> copy release artifacts
+  -> restart backend process
   -> Nginx serves live-life.asia
 ```
 
@@ -17,7 +18,8 @@ VSCode / local Git
 
 - It matches the current need: push locally and sync to Alibaba Cloud.
 - It does not require GitHub Actions, GitLab CI, or another SaaS yet.
-- The server already has Docker, Docker Compose, Nginx, and `/opt/livelife`.
+- The 1 GiB server does not build Go or Node assets.
+- The server only runs the prebuilt Linux backend binary and Nginx.
 - It keeps runtime data outside Git: `/opt/livelife/data`, `/opt/livelife/uploads`, `/opt/livelife/logs`.
 
 ## One-Time Server Setup
@@ -45,12 +47,6 @@ In the Alibaba Cloud instance firewall, add:
 TCP 2222 0.0.0.0/0
 ```
 
-If the script warns that the current user cannot run Docker without sudo, run:
-
-```bash
-sudo usermod -aG docker admin
-```
-
 Then log out of Workbench/SSH and reconnect before deploying.
 
 ## One-Time Local Setup
@@ -68,14 +64,14 @@ If `admin` is not the server login user, replace it.
 In VSCode terminal:
 
 ```powershell
+.\scripts\build-release.ps1
 git status
 git add .
-git commit -m "Update LIVE LIFE"
+git commit -m "Update LIVE LIFE release"
 git push aliyun master
 ```
 
-The push output should show Docker Compose building and starting containers.
-The push output should return quickly and say that deployment started in the background. Watch progress on the server:
+The push output should return quickly and say that deployment started in the background. The server does not run `npm build`, `go build`, or Docker image builds during deployment. Watch progress on the server:
 
 ```bash
 tail -f /opt/livelife/logs/deploy.log
@@ -87,9 +83,9 @@ On the server:
 
 ```bash
 cd /opt/livelife/app
-docker compose ps
-curl -I http://127.0.0.1:3000
+cat /opt/livelife/runtime/livelife-api.pid
 curl -I http://127.0.0.1:8080/api/health
+curl -I http://127.0.0.1
 ```
 
 From a browser:
