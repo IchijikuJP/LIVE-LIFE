@@ -3,6 +3,7 @@ set -euo pipefail
 
 DEPLOY_BRANCH="${1:-master}"
 DEPLOY_USER="$(whoami)"
+SSH_PORT="${SSH_PORT:-2222}"
 BASE_DIR="/opt/livelife"
 APP_DIR="$BASE_DIR/app"
 REPO_DIR="$BASE_DIR/git/livelife.git"
@@ -67,7 +68,7 @@ Deploy branch:
   $DEPLOY_BRANCH
 
 From your local project, add the server remote:
-  git remote add aliyun $DEPLOY_USER@47.74.8.10:$REPO_DIR
+  git remote add aliyun ssh://$DEPLOY_USER@47.74.8.10:$SSH_PORT$REPO_DIR
 
 Deploy:
   git push aliyun $DEPLOY_BRANCH

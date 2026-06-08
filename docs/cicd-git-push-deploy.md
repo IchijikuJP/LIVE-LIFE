@@ -5,7 +5,7 @@ This P0 deployment flow lets VSCode deploy to the Alibaba Cloud Tokyo server by 
 ```text
 VSCode / local Git
   -> git push aliyun master
-  -> Alibaba Cloud server bare Git repo
+  -> Alibaba Cloud server bare Git repo over SSH port 2222
   -> post-receive hook
   -> /opt/livelife/app
   -> docker compose up -d --build
@@ -27,6 +27,23 @@ Upload `scripts/setup-aliyun-git-deploy.sh` to the server, for example as `/home
 bash ~/setup-aliyun-git-deploy.sh master
 ```
 
+Also open a dedicated SSH port for Git deploy. Keep port `22` for Workbench/normal SSH and use `2222` for local Git push:
+
+```bash
+echo 'Port 22' | sudo tee /etc/ssh/sshd_config.d/99-livelife-git-deploy.conf
+echo 'Port 2222' | sudo tee -a /etc/ssh/sshd_config.d/99-livelife-git-deploy.conf
+sudo systemctl reload ssh
+sudo ufw allow 2222/tcp
+sudo ufw reload
+sudo ss -lntp | grep -E ':22|:2222'
+```
+
+In the Alibaba Cloud instance firewall, add:
+
+```text
+TCP 2222 0.0.0.0/0
+```
+
 If the script warns that the current user cannot run Docker without sudo, run:
 
 ```bash
@@ -40,7 +57,7 @@ Then log out of Workbench/SSH and reconnect before deploying.
 From the local project folder:
 
 ```powershell
-git remote add aliyun admin@47.74.8.10:/opt/livelife/git/livelife.git
+git remote add aliyun ssh://admin@47.74.8.10:2222/opt/livelife/git/livelife.git
 ```
 
 If `admin` is not the server login user, replace it.
