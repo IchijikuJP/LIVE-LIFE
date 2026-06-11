@@ -1,85 +1,65 @@
 # LIVE LIFE 文档索引
 
-这个目录现在分成两类文档：
+这个目录现在分成三类文档：
 
-1. 长期开发文档：需求、后端、前端设计版本、本地启动、部署。
-2. 阶段审批文档：V2、V3 的设计审批稿，用来记录当时为什么这么定方向。
+1. 固定需求与架构：多人协作时先看这些，避免每个人按自己的理解改。
+2. 开发与部署流程：说明本地、GitHub、阿里云之间怎么协作。
+3. 设计方案记录：V2、V3 以及未来 V4/V5 的视觉方向可以变化，但不应该反向影响后端业务契约。
 
-设计视觉以后会继续变化，但核心需求、后端 API、购买路径和联系路径先保持稳定。
+## 固定需求与整体架构
 
-## 1. 需求与范围
-
-- [architecture-overview.md](architecture-overview.md)
 - [requirements-analysis.md](requirements-analysis.md)
-
-用途：
-
-- 先看整体架构图，再看需求细节。
-- 记录 LIVE LIFE 当前产品目标。
-- 固定不会随设计版本频繁变化的需求。
-- 说明 Shows、CD 严选、Archive、Connect 的边界。
-- 说明暂缓登录注册和站内支付的原因。
-
-## 2. 后端详细设计
-
-- [backend-detailed-design.md](backend-detailed-design.md)
+- [architecture-overview.md](architecture-overview.md)
 - [database-schema-draft.md](database-schema-draft.md)
 
 用途：
 
-- 记录 Go API 的数据结构、接口、验证规则和未来数据库映射。
-- 固定前后端契约，避免前端视觉改版时反复改 API。
-- 说明 `/api/events`、`/api/cd-items`、`/api/contents`、`/api/connect` 的返回逻辑。
-- 说明数据库选型、ORM 方案和第一版表结构。
+- 固定 Shows / CD 严选 / Archive / Connect 的业务边界。
+- 固定不设置顶层 Shop 页面，购买从 CD 严选单品跳外部 Shop。
+- 固定三语言、LIVE LIFE 品牌展示、Connect 联系入口。
+- 固定当前数据库选型和未来升级方向。
 
-## 3. 前端多版本设计语言
+## 后端与 Clean Architecture
+
+- [backend-detailed-design.md](backend-detailed-design.md)
+- [backend-clean-architecture-review.md](backend-clean-architecture-review.md)
+
+用途：
+
+- 说明后端分层后的目录、职责和依赖方向。
+- 固定后端业务逻辑和 API 契约。
+- 说明未来即使前端设计从 V3 改到 V4，后端也不跟着视觉版本变化。
+
+## GitHub 多人协作与部署
+
+- [github-collaboration-workflow.md](github-collaboration-workflow.md)
+- [cicd-git-push-deploy.md](cicd-git-push-deploy.md)
+- [local-development.md](local-development.md)
+- [alicloud-tokyo-p0-deployment.md](alicloud-tokyo-p0-deployment.md)
+- [alicloud-tokyo-p0-status.md](alicloud-tokyo-p0-status.md)
+
+用途：
+
+- 说明当前本地直推阿里云工作流和未来 GitHub PR 工作流的区别。
+- 说明 main / develop 分支规则。
+- 说明 1GB 阿里云服务器不在服务器上构建，而是接收预构建 release 产物。
+- 说明 GitHub 建好后，其他人如何 fork/branch/PR 给负责人 review。
+
+## 前端设计方案
 
 - [frontend-design-variants.md](frontend-design-variants.md)
-
-用途：
-
-- 记录 V2、V3 以及未来 V4/V5 的设计语言。
-- 说明右上角 Review 下拉框如何选择不同版本。
-- 把“设计会变”这件事和“业务逻辑不变”分开。
-
-## 4. 本地开发与启动
-
-- [local-development.md](local-development.md)
-
-用途：
-
-- 说明本地启动方式。
-- 记录当前可用 API。
-- 说明三语言、本地预览和暂缓登录注册。
-
-## 5. 服务器与部署
-
-- [alicloud-tokyo-p0-status.md](alicloud-tokyo-p0-status.md)
-- [alicloud-tokyo-p0-deployment.md](alicloud-tokyo-p0-deployment.md)
-- [cicd-git-push-deploy.md](cicd-git-push-deploy.md)
-
-用途：
-
-- 记录阿里云东京轻量服务器 P0 配置状态。
-- 记录未来部署到 `/opt/livelife` 的路线。
-- 和本地开发文档分开，避免把本机调试命令误用到服务器。
-
-## 6. 阶段审批稿
-
 - [product-architecture-and-ui-approval.md](product-architecture-and-ui-approval.md)
 - [v3-design-approval.md](v3-design-approval.md)
 
 用途：
 
-- 记录 V2 和 V3 的设计审批过程。
-- 不作为唯一开发入口，开发时优先看上面的长期文档。
+- 记录 V2、V3 的设计语言。
+- 说明右上角 review 下拉框如何选择不同视觉方案。
+- 前端视觉可以继续改，但不能随意改后端 API 契约。
 
-## 7. 建议新增但待审批的文档
+## 后续建议补充
 
-这些文档建议后续补齐，当前先不创建完整内容，等你审批：
-
-- `content-data-entry-guide.md`：后台还没做之前，先规定演出、CD、黑胶、Archive 内容怎么填写。
-- `external-link-policy.md`：规定票站、BASE、Instagram、小红书等外部链接怎么放，避免用户误解为站内购买。
-- `review-mode-guide.md`：专门说明客户 Review 页面如何切换 V2/V3/V4，哪些控件只在预览环境出现。
-- `brand-language-guide.md`：规定 LIVE LIFE、三语言、英文全大写、乐队名纹理和版权/授权提示的用语边界。
-- `future-auth-checkout-notes.md`：等决定是否做登录注册和站内支付后，再整理账户、订单、售后的设计。
+- `content-data-entry-guide.md`：后端管理系统完成前，先规定演出、CD、黑胶、Archive 内容怎么录入。
+- `external-link-policy.md`：规定票站、BASE、Instagram、小红书等外部链接如何展示，避免误导为站内交易。
+- `brand-language-guide.md`：规定 LIVE LIFE、三语言、英文全大写、乐队名纹理和授权提示边界。
+- `future-auth-checkout-notes.md`：等决定是否做登录注册和站内支付后，再整理账户、订单、售后设计。

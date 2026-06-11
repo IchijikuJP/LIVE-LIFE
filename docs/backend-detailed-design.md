@@ -1,58 +1,110 @@
 # LIVE LIFE 后端详细设计
 
-状态：当前开发基准  
-最后更新：2026-06-08
+状态：Clean Architecture 分层后基线
+最后更新：2026-06-11
 
 ## 1. 后端目标
 
-后端先保持轻量、稳定、易迁移。
+后端先保持轻量、稳定、容易迁移。
 
-当前阶段的职责：
+当前职责：
 
-- 提供本地预览 API。
+- 提供 LIVE LIFE 前端所需 API。
 - 固定前后端数据契约。
-- 返回三语言展示字段。
-- 承接 Connect 表单验证。
-- 为未来数据库、管理后台、部署上线留下清晰边界。
+- 返回中文 / 日本語 / English 三语言展示字段。
+- 保存 Connect 表单消息。
+- 通过 GORM 操作 SQLite。
+- 为未来后台管理、PostgreSQL/MySQL、登录、订单、邮件通知留下清楚边界。
 
-视觉设计会从 V2、V3 继续演化，但后端 API 暂时不跟着视觉版本改变。
+重要原则：
+
+- 视觉方案可以从 V2、V3 继续演化。
+- 后端 API 不跟随视觉版本变化。
+- 多人协作时，业务逻辑和 API 契约必须先看本文档再修改。
 
 ## 2. 当前技术栈
 
 ```text
 语言：Go
+HTTP：net/http
+ORM：GORM
+数据库：SQLite
+SQLite driver：github.com/glebarez/sqlite
 入口：backend/cmd/server/main.go
-静态文件：backend/static/
-本地端口：http://localhost:8080
+静态兜底文件：backend/static/
+本地后端端口：http://localhost:8080
 ```
 
-当前是内存种子数据，不接数据库。
+## 3. Clean Architecture 分层
 
-后续可以把 seed 数据迁移到：
-
-- SQLite。
-- GORM ORM。
-- SQL migration 文件。
-- 后续管理后台或 CMS。
-
-数据库与 ORM 的详细表设计见：
+当前后端目录：
 
 ```text
-docs/database-schema-draft.md
+backend/
+  cmd/server/
+    main.go
+    main_test.go
+  internal/
+    domain/
+      types.go
+    application/
+      service.go
+    infrastructure/sqlite/
+      models.go
+      seed.go
+      store.go
+    interfaces/httpapi/
+      server.go
 ```
 
-当前建议：
+职责：
 
 ```text
-P1 数据库：SQLite
-Go ORM：GORM
-SQLite Driver：优先 github.com/glebarez/sqlite
-Migration：SQL migration 文件，建议 goose
+domain
+  业务实体、字段定义、Connect 校验规则、品牌常量。
+
+application
+  用例服务。只依赖 domain 和 Repository 接口，不知道 SQLite/GORM/HTTP。
+
+infrastructure/sqlite
+  GORM model、SQLite 连接、迁移、种子数据、Repository 实现。
+
+interfaces/httpapi
+  HTTP handler、JSON 返回、CORS、静态文件兜底。
+
+cmd/server
+  程序启动和依赖组装，不放业务逻辑。
 ```
 
-这个选择的重点是：当前 LIVE LIFE 是内容型站点和外部购买入口，不是高并发站内交易系统，所以先用单文件 SQLite 降低部署、备份和维护成本。
+依赖方向：
 
-## 3. API 总览
+```text
+cmd/server
+  -> interfaces/httpapi
+  -> application
+  -> domain
+
+infrastructure/sqlite
+  -> domain
+
+application
+  -> domain
+```
+
+application 通过接口依赖数据层：
+
+```go
+type Repository interface {
+    ListEvents(ctx context.Context) ([]domain.Event, error)
+    ListCatalogItems(ctx context.Context) ([]domain.CatalogItem, error)
+    ListContents(ctx context.Context) ([]domain.ContentItem, error)
+    SaveConnectMessage(ctx context.Context, message domain.ConnectMessage) error
+}
+```
+
+这样未来如果从 SQLite 换 PostgreSQL，只需要新增一个 infrastructure/postgres 实现，不需要改 HTTP handler 和业务用例。
+
+## 4. API 总览
 
 ```text
 GET  /api/health
@@ -65,14 +117,14 @@ POST /api/join
 
 说明：
 
-- `/api/join` 只是兼容旧表单命名，内部和 `/api/connect` 使用同一套逻辑。
+- `/api/join` 只是兼容旧命名，内部复用 `/api/connect`。
 - 没有 `/api/shop-items`。
 - 没有顶层 Shop API。
-- CD/黑胶商业路径统一收敛到 `/api/cd-items`。
+- CD / 黑胶商业路径统一收敛到 `/api/cd-items`。
 
-## 4. 通用字段约定
+## 5. 通用字段约定
 
-所有对外展示数据都应该带：
+所有对外展示数据都必须带：
 
 ```json
 {
@@ -80,9 +132,9 @@ POST /api/join
 }
 ```
 
-多语言字段采用两种形式。
+多语言字段使用两类形式。
 
-### 4.1 I18n 后缀字段
+### 5.1 I18n 后缀字段
 
 适合标题、摘要、备注：
 
@@ -103,7 +155,7 @@ POST /api/join
 当前语言 -> 中文 -> fallback 字段 -> 空字符串
 ```
 
-### 4.2 直接三语言对象字段
+### 5.2 直接三语言对象字段
 
 适合按钮文案：
 
@@ -117,47 +169,23 @@ POST /api/join
 }
 ```
 
-前端读取优先级：
-
-```text
-当前语言 -> 中文 -> 默认按钮文案
-```
-
-## 5. /api/health
-
-用途：
-
-- 前端检查 API 是否可用。
-- 本地预览显示连接状态。
-
-返回示例：
-
-```json
-{
-  "brand": "LIVE LIFE",
-  "service": "LIVE LIFE API",
-  "status": "ok",
-  "time": "2026-06-08T00:00:00Z"
-}
-```
-
 ## 6. /api/events
 
 用途：
 
 - 返回演出情报。
-- 区分 LIVE LIFE 自主演出和推荐/档案演出。
+- 区分 LIVE LIFE 自主演出和推荐 / 档案演出。
 
 核心字段：
 
 ```json
 {
-  "id": "redhair-2026-july",
+  "id": "redhair-japan-2026-july",
   "brand": "LIVE LIFE",
   "owned": true,
   "title": "Fallback title",
   "titleI18n": {},
-  "date": "2026.07.10 / 2026.07.14",
+  "date": "2026-07-10 / 2026-07-14",
   "time": "OPEN / START",
   "venue": "Tokyo",
   "price": "TBD",
@@ -175,17 +203,17 @@ POST /api/join
 
 前端展示规则：
 
-- `owned = true` 的活动固定在 Shows 页面最上方。
-- `owned = false` 的活动放在推荐或 Archive 风格区域。
+- `owned = true` 固定在 Shows 页面最上方。
+- `owned = false` 放在推荐演出或 Archive 风格区域。
 - `ticketNote` 用于说明外部票站或票务待确认。
 
-未来数据库建议：
+数据库表：
 
 ```text
-events
-event_translations
-event_lineup
-event_tags
+event_models
+event_translation_models
+event_lineup_models
+event_tag_models
 ```
 
 ## 7. /api/cd-items
@@ -195,30 +223,13 @@ event_tags
 - 返回 CD 严选列表。
 - 同时支持 CD 和黑胶分类。
 
-核心字段：
+商业路径：
 
-```json
-{
-  "id": "redhair-demo-cd",
-  "brand": "LIVE LIFE",
-  "format": "cd",
-  "artist": "紅髪少年殺人事件",
-  "title": "Fallback title",
-  "titleI18n": {},
-  "summary": "Fallback summary",
-  "summaryI18n": {},
-  "tracks": [],
-  "status": "external shop",
-  "price": "TBD",
-  "imageUrl": "/assets/events/redhair-2026-july.jpg",
-  "purchaseUrl": "https://thebase.com/",
-  "purchaseText": {
-    "zh": "点击此处购买",
-    "ja": "こちらから購入",
-    "en": "BUY HERE"
-  }
-}
+```text
+CD 严选 -> 单品卡片 / 详情 -> purchaseUrl -> 外部 Shop，例如 BASE
 ```
+
+后端当前不处理支付，不创建站内订单。
 
 返回结构：
 
@@ -231,29 +242,6 @@ event_tags
 }
 ```
 
-说明：
-
-- `items` 是完整列表。
-- `cd` 是 CD 分类。
-- `vinyl` 是黑胶分类。
-- 前端可以直接用 `items` 自己筛选，也可以使用后端分组。
-
-购买路径：
-
-```text
-单品卡片 -> purchaseUrl -> 外部 Shop
-```
-
-后端不处理支付、不创建订单。
-
-未来数据库建议：
-
-```text
-catalog_items
-catalog_item_translations
-catalog_item_tracks
-```
-
 ## 8. /api/contents
 
 用途：
@@ -261,21 +249,7 @@ catalog_item_tracks
 - 返回 Archive 或说明性内容。
 - 不和演出、CD 商品混在一起。
 
-核心字段：
-
-```json
-{
-  "id": "about-live-life",
-  "brand": "LIVE LIFE",
-  "type": "note",
-  "title": "Fallback title",
-  "titleI18n": {},
-  "summary": "Fallback summary",
-  "summaryI18n": {}
-}
-```
-
-未来可扩展：
+未来可扩展字段：
 
 - `imageUrl`
 - `sourceUrl`
@@ -288,8 +262,8 @@ catalog_item_tracks
 用途：
 
 - 接收联系表单。
-- 当前只做本地验证。
-- 后续可接邮件、数据库或客服系统。
+- 保存到 SQLite。
+- 后续可接邮件通知、客服系统、后台管理列表。
 
 请求结构：
 
@@ -302,43 +276,27 @@ catalog_item_tracks
 }
 ```
 
-当前验证规则：
+校验规则：
 
 - `nickname` 必填。
-- `email` 必填。
+- `email` 必填并且包含 `@`。
 - `topic` 必填。
-- `message` 当前可以为空，但建议前端引导填写。
+- `message` 当前可为空。
 
-返回示例：
+返回结构：
 
 ```json
 {
+  "accepted": true,
   "brand": "LIVE LIFE",
   "message": "LIVE LIFE received your message.",
-  "topic": "ticket"
+  "messageId": "conn_..."
 }
 ```
 
-未来数据库建议：
-
-```text
-connect_messages
-```
-
-字段建议：
-
-- `id`
-- `nickname`
-- `email`
-- `topic`
-- `message`
-- `status`
-- `created_at`
-- `handled_at`
-
 ## 10. 错误处理
 
-当前 API 返回 JSON 错误：
+API 返回 JSON 错误：
 
 ```json
 {
@@ -346,34 +304,38 @@ connect_messages
 }
 ```
 
-建议保持：
+约定：
 
 - 前端可读。
 - 不暴露内部堆栈。
 - HTTP status 与错误类型匹配。
 
-## 11. 后端不跟随设计版本变化
+## 11. 数据库选型
 
-未来 Review 模式会出现：
+当前：
 
 ```text
-V2 当前版 / V3 Band Signal / V4 ...
+SQLite + GORM
 ```
-
-但后端仍然保持同一套 API。
 
 原因：
 
-- 设计版本只是视觉 Renderer。
-- 数据结构不应该因为颜色、动效、布局变化而改变。
-- 客户 Review 可以对比视觉，但内容数据必须一致。
+- 当前是内容型站点和外部购买入口。
+- 1GB 阿里云服务器资源有限。
+- SQLite 文件备份、迁移、部署简单。
+- 当前没有站内高并发订单交易。
 
-## 12. 下一步建议
+未来升级条件：
 
-待审批后可以补：
+- 需要多人后台同时编辑大量内容。
+- 需要站内登录、订单、支付、库存。
+- Connect 消息量明显增长。
+- 需要更复杂的数据分析或权限管理。
 
-- 数据库表结构文档。
-- API 示例 JSON 文件。
-- Connect 表单邮件通知方案。
-- 外部链接安全策略。
-- 管理后台最小字段设计。
+未来可升级：
+
+```text
+PostgreSQL 或 MySQL
+```
+
+由于应用层依赖 Repository 接口，升级数据库时优先新增基础设施层实现，不改业务用例。

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-DEPLOY_BRANCH="${1:-master}"
+DEPLOY_BRANCH="${1:-develop}"
 DEPLOY_USER="$(whoami)"
 SSH_PORT="${SSH_PORT:-2222}"
 BASE_DIR="/opt/livelife"
