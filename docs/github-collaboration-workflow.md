@@ -1,6 +1,6 @@
 # LIVE LIFE GitHub 多人协作工作流
 
-状态：准备启用
+状态：已启用
 最后更新：2026-06-11
 
 ## 1. 目标
@@ -20,52 +20,24 @@
 
 ## 2. 当前远程仓库状态
 
-当前本地已有：
+当前本地已有两个远程：
 
 ```text
+origin  https://github.com/IchijikuJP/LIVE-LIFE.git
 aliyun  ssh://admin@47.74.8.10:2222/opt/livelife/git/livelife.git
 ```
 
 用途：
 
 ```text
-部署到阿里云服务器
-```
-
-还缺：
-
-```text
-origin  GitHub 私有仓库
-```
-
-你现在可以做的事：
-
-1. 登录 GitHub。
-2. 新建一个 Private 私有仓库。
-3. 仓库名建议：`live-life` 或 `LIVE-LIFE`。
-4. 不要勾选 README / .gitignore / license。
-5. 把仓库地址发给我。
-
-## 3. 目标远程配置
-
-最终应该是：
-
-```text
-origin  git@github.com:<OWNER>/<REPO>.git
-aliyun  ssh://admin@47.74.8.10:2222/opt/livelife/git/livelife.git
-```
-
-区别：
-
-```text
 origin
-  多人协作、Pull Request、代码 review、CI。
+  GitHub 协作、Pull Request、代码 review、CI。
 
 aliyun
-  部署远程。只有负责人或部署流程使用。
+  部署到阿里云服务器。普通协作者不使用。
 ```
 
-## 4. 分支规则
+## 3. 分支规则
 
 ```text
 main
@@ -96,21 +68,21 @@ main 更新方式：
 负责人确认阶段稳定后，再把 develop 合并到 main。
 ```
 
-## 5. 外部开发者工作方式
+## 4. 外部开发者工作方式
 
 开发者第一次：
 
 ```bash
-git clone git@github.com:<OWNER>/<REPO>.git
-cd live-life
-git checkout develop
+git clone https://github.com/IchijikuJP/LIVE-LIFE.git
+cd LIVE-LIFE
+git switch develop
 ```
 
 开始做功能：
 
 ```bash
 git pull origin develop
-git checkout -b feature/example
+git switch -c feature/example
 ```
 
 提交：
@@ -128,7 +100,13 @@ base: develop
 compare: feature/example
 ```
 
-## 6. 负责人 Review 规则
+三丰老师（`kirori-1`）的详细手册：
+
+```text
+docs/collaborator-manual-kirori-1.md
+```
+
+## 5. 负责人 Review 规则
 
 合并 PR 前至少看：
 
@@ -150,7 +128,7 @@ docs/backend-detailed-design.md
 docs/database-schema-draft.md
 ```
 
-## 7. 现在工作流和 GitHub 工作流的区别
+## 6. 现在工作流和 GitHub 工作流的区别
 
 以前：
 
@@ -183,13 +161,75 @@ docs/database-schema-draft.md
 - 阿里云仍然只接收构建好的 release 产物。
 - 1GB 内存限制仍然有效，服务器不跑前端构建。
 
-## 8. 当前需要你做的事
+## 7. 当前已完成
 
-现在你可以同时做：
+```text
+main
+  已推送到 GitHub。
 
-1. 创建 GitHub 私有仓库。
-2. 把仓库地址发给我。
-3. 之后我会添加 `origin`。
-4. 我会把当前代码推到 GitHub。
-5. 再建立或确认 `main` / `develop` 分支。
-6. 以后其他人从 GitHub 拉代码和提 PR。
+develop
+  已推送到 GitHub。
+
+origin
+  已指向 https://github.com/IchijikuJP/LIVE-LIFE.git。
+
+aliyun
+  保留为部署远程。
+```
+
+## 8. GitHub 分支保护建议
+
+建议给 `main` 和 `develop` 分别添加保护规则。
+
+最低要求：
+
+- Require a pull request before merging
+- Require approvals：至少 1 个
+- Require status checks to pass before merging
+- 选择 GitHub Actions 里的 `Go backend` 和 `React frontend`
+- Require conversation resolution before merging
+- 不允许 force push
+- 不允许删除受保护分支
+
+如果 GitHub 页面暂时还不能选择具体 status check，先让任意 PR 跑一次 GitHub Actions，再回到保护规则里选择对应检查项。
+
+## 9. 保护规则设置步骤
+
+在 GitHub 页面上：
+
+1. 打开 `IchijikuJP/LIVE-LIFE` 仓库。
+2. 点顶部 `Settings`。
+3. 左侧点 `Branches`。
+4. 在 `Branch protection rules` 区域点 `Add branch protection rule`。
+5. `Branch name pattern` 填 `main`。
+6. 勾选 `Require a pull request before merging`。
+7. `Required approvals` 设置为 `1`。
+8. 勾选 `Dismiss stale pull request approvals when new commits are pushed`。
+9. 勾选 `Require status checks to pass before merging`。
+10. 勾选 `Require branches to be up to date before merging`。
+11. 在 status checks 里选择：
+    - `Go backend`
+    - `React frontend`
+12. 勾选 `Require conversation resolution before merging`。
+13. 不要勾选 `Allow force pushes`。
+14. 不要勾选 `Allow deletions`。
+15. 点 `Create` 或 `Save changes`。
+
+然后重复一次，`Branch name pattern` 改成：
+
+```text
+develop
+```
+
+## 10. main 和 develop 的建议差异
+
+`main` 可以更严格：
+
+- 必须 PR。
+- 必须 1 个 approval。
+- 必须 CI 通过。
+- 必须解决所有 conversation。
+- 不允许 force push。
+- 不允许删除。
+
+`develop` 也建议保持同样规则。当前团队人数少，不建议为了方便直接推 `develop`，否则 PR review 的习惯很容易被破坏。

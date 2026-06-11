@@ -32,6 +32,7 @@
 
 ## GitHub 多人协作与部署
 
+- [collaborator-manual-kirori-1.md](collaborator-manual-kirori-1.md)
 - [github-collaboration-workflow.md](github-collaboration-workflow.md)
 - [cicd-git-push-deploy.md](cicd-git-push-deploy.md)
 - [local-development.md](local-development.md)
@@ -41,6 +42,7 @@
 用途：
 
 - 说明当前本地直推阿里云工作流和未来 GitHub PR 工作流的区别。
+- 说明三丰老师（kirori-1）第一次 clone、开分支、提交 PR、自测的具体操作。
 - 说明 main / develop 分支规则。
 - 说明 1GB 阿里云服务器不在服务器上构建，而是接收预构建 release 产物。
 - 说明 GitHub 建好后，其他人如何 fork/branch/PR 给负责人 review。

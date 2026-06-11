@@ -8,6 +8,23 @@ LIVE LIFE MVP 项目。当前目标是先做一个可以本地预览的东京音
 - 首页内容摘要
 - Connect 联系入口
 
+## 给协作者
+
+目标读者：三丰老师（GitHub：`kirori-1`）
+
+请先阅读：
+
+- [docs/collaborator-manual-kirori-1.md](docs/collaborator-manual-kirori-1.md)
+- [docs/github-collaboration-workflow.md](docs/github-collaboration-workflow.md)
+
+当前协作规则：
+
+- `main` 是稳定主线。
+- `develop` 是日常开发和预览部署基线。
+- 普通修改请从 `develop` 新建 `feature/*`、`fix/*` 或 `docs/*` 分支。
+- 修改完成后向 `develop` 提 Pull Request，负责人 review 后合并。
+- 阿里云 `aliyun` remote 只用于部署，不作为普通协作者入口。
+
 ## 本地预览
 
 当前 Windows 环境暂时没有可用的 `npm`，所以先用 Go 后端直接提供本地静态预览页。
