@@ -2,7 +2,7 @@ import { Archive, Disc3, Mail, Ticket } from "lucide-react";
 import { FormEvent, ReactNode, useEffect, useMemo, useState } from "react";
 
 type Language = "zh" | "ja" | "en";
-type DesignVariant = "v2" | "v3";
+type DesignVariant = "v2" | "v2-refined" | "v3";
 type FormatFilter = "all" | "cd" | "vinyl";
 type LocalizedText = Partial<Record<Language, string>>;
 
@@ -65,6 +65,7 @@ type Copy = {
   navConnect: string;
   designLabel: string;
   designV2: string;
+  designV2Refined: string;
   designV3: string;
   heroEyebrow: string;
   heroTitle: string;
@@ -116,15 +117,69 @@ type Copy = {
   externalShopNote: string;
 };
 
+const connectMailAddress = "livelife.cn.2023@gmail.com";
+
+function formText(payload: Record<string, FormDataEntryValue>, key: string) {
+  const value = payload[key];
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function connectTopicLabel(topic: string, copyText: Copy) {
+  const labels: Record<string, string> = {
+    ticket: copyText.topicTicket,
+    "cd-select": copyText.topicCDSelect,
+    support: copyText.topicSupport,
+    collab: copyText.topicCollab,
+  };
+  return labels[topic] || topic;
+}
+
+// Connect 表单仍然先使用浏览器原生 mailto 能力，用户点击后会打开自己的邮件 App 或网页邮箱草稿。
+// 同一份内容还会继续 POST 到本地 API，方便之后接后台列表、客服系统或真正的服务端邮件发送。
+function buildConnectMailto(payload: Record<string, FormDataEntryValue>, copyText: Copy) {
+  const nickname = formText(payload, "nickname") || "-";
+  const email = formText(payload, "email") || "-";
+  const topic = connectTopicLabel(formText(payload, "topic"), copyText);
+  const message = formText(payload, "message") || "-";
+  const subject = `[LIVE LIFE CONNECT] ${topic} / ${nickname}`;
+  const body = [
+    "LIVE LIFE CONNECT",
+    "",
+    `${copyText.labelNickname}: ${nickname}`,
+    `${copyText.labelEmail}: ${email}`,
+    `${copyText.labelTopic}: ${topic}`,
+    "",
+    `${copyText.labelMessage}:`,
+    message,
+    "",
+    `Page: ${window.location.href}`,
+    `Time: ${new Date().toLocaleString()}`,
+  ].join("\n");
+
+  return `mailto:${connectMailAddress}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
+function openConnectMail(payload: Record<string, FormDataEntryValue>, copyText: Copy) {
+  const mailtoUrl = buildConnectMailto(payload, copyText);
+  const link = document.createElement("a");
+  link.href = mailtoUrl;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+}
+
 const copy: Record<Language, Copy> = {
   zh: {
     langAttr: "zh-Hans",
     navShows: "演出情报",
     navCDSelect: "CD 严选",
-    navArchive: "档案",
+    navArchive: "档案馆",
     navConnect: "联系",
     designLabel: "设计方案",
     designV2: "V2 当前版",
+    designV2Refined: "V2 修改版",
     designV3: "V3 乐队信号版",
     heroEyebrow: "TOKYO MUSIC INDEX",
     heroTitle: "LIVE LIFE 是东京现场、CD 严选和音乐档案入口。",
@@ -136,17 +191,17 @@ const copy: Record<Language, Copy> = {
     apiOffline: "API 未连接",
     scheduleEyebrow: "SCHEDULE",
     scheduleTitle: "近期日程",
-    showsEyebrow: "SHOWS",
+    showsEyebrow: "演出情报",
     showsTitle: "演出情报",
     showsNote: "LIVE LIFE 自主演出固定在最上方，推荐演出和历史视觉档案放在下面。",
-    cdEyebrow: "CD SELECT",
+    cdEyebrow: "CD 严选",
     cdTitle: "CD 严选",
     cdCopy: "这里分成 CD 和黑胶。单品详情里的购买按钮会跳到外部 Shop，例如 BASE。",
     formatAll: "全部",
     formatCD: "CD",
     formatVinyl: "黑胶",
-    archiveEyebrow: "ARCHIVE",
-    archiveTitle: "档案",
+    archiveEyebrow: "档案馆",
+    archiveTitle: "档案馆",
     archiveCopy: "历史海报、公开资料备注、照片和推荐文章以后会集中在这里。",
     connectEyebrow: "CONNECT",
     connectTitle: "票务、购买、发货或合作问题，都从这里联系。",
@@ -167,7 +222,7 @@ const copy: Record<Language, Copy> = {
     submitFallback: "LIVE LIFE 已收到你的消息。",
     submitFailed: "发送失败",
     ownBadge: "LIVE LIFE 自主演出",
-    recommendBadge: "推荐 / 档案",
+    recommendBadge: "推荐 / 档案馆",
     ticketPending: "票务待确认",
     sourceNote: "资料备注",
     scheduleLive: "LIVE",
@@ -178,32 +233,33 @@ const copy: Record<Language, Copy> = {
   ja: {
     langAttr: "ja",
     navShows: "ライブ情報",
-    navCDSelect: "CD セレクト",
+    navCDSelect: "CD厳選",
     navArchive: "アーカイブ",
     navConnect: "問い合わせ",
     designLabel: "デザイン",
     designV2: "V2 現行案",
+    designV2Refined: "V2 改修案",
     designV3: "V3 バンド信号案",
     heroEyebrow: "TOKYO MUSIC INDEX",
-    heroTitle: "LIVE LIFE は東京のライブ、CD セレクト、音楽アーカイブの入口です。",
-    heroLead: "LIVE LIFE の自主公演、おすすめライブ、CD/ヴァイナルのセレクト、過去資料、問い合わせをひとつの音楽入口として整理します。",
+    heroTitle: "LIVE LIFE は東京のライブ、CD厳選、音楽アーカイブの入口です。",
+    heroLead: "LIVE LIFE の自主公演、おすすめライブ、CD/ヴァイナルの厳選、過去資料、問い合わせをひとつの音楽入口として整理します。",
     heroPrimary: "スケジュールを見る",
-    heroSecondary: "CD セレクトへ",
+    heroSecondary: "CD厳選へ",
     apiChecking: "API 確認中",
     apiOnline: "API 接続済み",
     apiOffline: "API 未接続",
     scheduleEyebrow: "SCHEDULE",
     scheduleTitle: "近日予定",
-    showsEyebrow: "SHOWS",
+    showsEyebrow: "ライブ情報",
     showsTitle: "ライブ情報",
     showsNote: "LIVE LIFE の自主公演を最上部に固定し、おすすめ公演と過去ビジュアルを下に配置します。",
-    cdEyebrow: "CD SELECT",
-    cdTitle: "CD セレクト",
+    cdEyebrow: "CD厳選",
+    cdTitle: "CD厳選",
     cdCopy: "CD とヴァイナルに分けます。詳細内の購入ボタンは BASE など外部 Shop へ移動します。",
     formatAll: "すべて",
     formatCD: "CD",
     formatVinyl: "ヴァイナル",
-    archiveEyebrow: "ARCHIVE",
+    archiveEyebrow: "アーカイブ",
     archiveTitle: "アーカイブ",
     archiveCopy: "過去フライヤー、公開資料メモ、写真、推薦記事などをここに集約します。",
     connectEyebrow: "CONNECT",
@@ -217,7 +273,7 @@ const copy: Record<Language, Copy> = {
     placeholderEmail: "you@example.com",
     placeholderMessage: "困っていること、または LIVE LIFE に連絡したい内容を書いてください。",
     topicTicket: "チケット",
-    topicCDSelect: "CD セレクト",
+    topicCDSelect: "CD厳選",
     topicSupport: "購入・発送",
     topicCollab: "協力 / 投稿",
     submitButton: "送信",
@@ -235,29 +291,30 @@ const copy: Record<Language, Copy> = {
   },
   en: {
     langAttr: "en",
-    navShows: "SHOWS",
-    navCDSelect: "CD SELECT",
+    navShows: "LIVES",
+    navCDSelect: "HAND-PICKED CD",
     navArchive: "ARCHIVE",
     navConnect: "CONNECT",
     designLabel: "DESIGN",
     designV2: "V2 CURRENT",
+    designV2Refined: "V2 REVISED",
     designV3: "V3 BAND SIGNAL",
     heroEyebrow: "TOKYO MUSIC INDEX",
-    heroTitle: "LIVE LIFE IS AN ENTRY POINT FOR TOKYO SHOWS, CD SELECT, AND MUSIC ARCHIVES.",
-    heroLead: "WE ORGANIZE LIVE LIFE OWNED SHOWS, RECOMMENDED LIVE DATES, CD/VINYL SELECT, ARCHIVES, AND SUPPORT MESSAGES INTO ONE CLEAR MUSIC INDEX.",
+    heroTitle: "LIVE LIFE IS AN ENTRY POINT FOR TOKYO LIVES, HAND-PICKED CD, AND MUSIC ARCHIVES.",
+    heroLead: "WE ORGANIZE LIVE LIFE OWNED LIVES, RECOMMENDED LIVE DATES, HAND-PICKED CD/VINYL, ARCHIVES, AND SUPPORT MESSAGES INTO ONE CLEAR MUSIC INDEX.",
     heroPrimary: "VIEW SCHEDULE",
-    heroSecondary: "ENTER CD SELECT",
+    heroSecondary: "ENTER HAND-PICKED CD",
     apiChecking: "CHECKING API",
     apiOnline: "API CONNECTED",
     apiOffline: "API OFFLINE",
     scheduleEyebrow: "SCHEDULE",
     scheduleTitle: "UPCOMING",
-    showsEyebrow: "SHOWS",
-    showsTitle: "SHOWS",
-    showsNote: "LIVE LIFE OWNED SHOWS STAY AT THE TOP. RECOMMENDATIONS AND ARCHIVE VISUALS SIT BELOW.",
-    cdEyebrow: "CD SELECT",
-    cdTitle: "CD SELECT",
-    cdCopy: "CD SELECT IS SPLIT INTO CD AND VINYL. PURCHASE BUTTONS ON DETAIL CARDS LINK TO EXTERNAL SHOPS SUCH AS BASE.",
+    showsEyebrow: "LIVES",
+    showsTitle: "LIVES",
+    showsNote: "LIVE LIFE OWNED LIVES STAY AT THE TOP. RECOMMENDATIONS AND ARCHIVE VISUALS SIT BELOW.",
+    cdEyebrow: "HAND-PICKED CD",
+    cdTitle: "HAND-PICKED CD",
+    cdCopy: "HAND-PICKED CD IS SPLIT INTO CD AND VINYL. PURCHASE BUTTONS ON DETAIL CARDS LINK TO EXTERNAL SHOPS SUCH AS BASE.",
     formatAll: "ALL",
     formatCD: "CD",
     formatVinyl: "VINYL",
@@ -275,7 +332,7 @@ const copy: Record<Language, Copy> = {
     placeholderEmail: "you@example.com",
     placeholderMessage: "TELL US WHAT HAPPENED OR WHY YOU WANT TO CONTACT LIVE LIFE.",
     topicTicket: "TICKETING",
-    topicCDSelect: "CD SELECT",
+    topicCDSelect: "HAND-PICKED CD",
     topicSupport: "PURCHASE OR SHIPPING",
     topicCollab: "COLLABORATION / SUBMISSION",
     submitButton: "SEND MESSAGE",
@@ -296,6 +353,119 @@ const copy: Record<Language, Copy> = {
 const classicBandCloud =
   "THE BEATLES THE ROLLING STONES LED ZEPPELIN PINK FLOYD QUEEN THE WHO DAVID BOWIE THE KINKS T. REX ROXY MUSIC THE CLASH SEX PISTOLS THE JAM BUZZCOCKS JOY DIVISION NEW ORDER THE SMITHS THE CURE SIOUXSIE AND THE BANSHEES ECHO AND THE BUNNYMEN THE STONE ROSES MY BLOODY VALENTINE SLOWDIVE PRIMAL SCREAM RADIOHEAD OASIS BLUR SUEDE PULP THE VERVE ARCTIC MONKEYS NIRVANA PIXIES SONIC YOUTH R.E.M. THE STOOGES THE VELVET UNDERGROUND TALKING HEADS";
 
+const v2BandNames = [
+  "THE BEATLES",
+  "THE ROLLING STONES",
+  "THE KINKS",
+  "THE WHO",
+  "THE YARDBIRDS",
+  "CREAM",
+  "LED ZEPPELIN",
+  "PINK FLOYD",
+  "BLACK SABBATH",
+  "DEEP PURPLE",
+  "QUEEN",
+  "DAVID BOWIE",
+  "T. REX",
+  "ROXY MUSIC",
+  "SPARKS",
+  "THE VELVET UNDERGROUND",
+  "THE STOOGES",
+  "MC5",
+  "NEW YORK DOLLS",
+  "PATTI SMITH",
+  "TELEVISION",
+  "RAMONES",
+  "BLONDIE",
+  "TALKING HEADS",
+  "THE CLASH",
+  "SEX PISTOLS",
+  "BUZZCOCKS",
+  "WIRE",
+  "XTC",
+  "THE JAM",
+  "PUBLIC IMAGE LTD",
+  "JOY DIVISION",
+  "NEW ORDER",
+  "THE FALL",
+  "GANG OF FOUR",
+  "SIOUXSIE AND THE BANSHEES",
+  "BAUHAUS",
+  "THE CURE",
+  "ECHO AND THE BUNNYMEN",
+  "THE PSYCHEDELIC FURS",
+  "THE SMITHS",
+  "THE JESUS AND MARY CHAIN",
+  "MY BLOODY VALENTINE",
+  "SLOWDIVE",
+  "RIDE",
+  "LUSH",
+  "COCTEAU TWINS",
+  "SPACEMEN 3",
+  "THE STONE ROSES",
+  "HAPPY MONDAYS",
+  "PRIMAL SCREAM",
+  "MASSIVE ATTACK",
+  "PORTISHEAD",
+  "TRICKY",
+  "RADIOHEAD",
+  "OASIS",
+  "BLUR",
+  "SUEDE",
+  "PULP",
+  "THE VERVE",
+  "MOGWAI",
+  "PJ HARVEY",
+  "NIRVANA",
+  "PEARL JAM",
+  "SONIC YOUTH",
+  "PIXIES",
+  "DINOSAUR JR.",
+  "R.E.M.",
+  "THE REPLACEMENTS",
+  "HUSKER DU",
+  "GUIDED BY VOICES",
+  "PAVEMENT",
+  "YO LA TENGO",
+  "THE FLAMING LIPS",
+  "WILCO",
+  "THE WHITE STRIPES",
+  "THE STROKES",
+  "INTERPOL",
+  "YEAH YEAH YEAHS",
+  "LCD SOUNDSYSTEM",
+  "ARCADE FIRE",
+  "TV ON THE RADIO",
+  "ARCTIC MONKEYS",
+  "FRANZ FERDINAND",
+  "BLOC PARTY",
+  "THE LIBERTINES",
+  "FOALS",
+  "IDLES",
+  "FONTAINES D.C.",
+  "BLACK MIDI",
+  "SQUID",
+  "CAN",
+  "NEU!",
+  "KRAFTWERK",
+  "FAUST",
+  "TALK TALK",
+  "WIRE",
+  "SWANS",
+  "THE RESIDENTS",
+  "SUICIDE",
+  "DEVO",
+  "MISSION OF BURMA",
+  "MINUTEMEN",
+  "FUGAZI",
+  "BIG BLACK",
+  "SLINT",
+  "TORTOISE",
+  "STEREOLAB",
+  "BROADCAST",
+  "THE SEA AND CAKE",
+];
+
 const languageLabels: Record<Language, string> = {
   zh: "中文",
   ja: "日本語",
@@ -305,10 +475,11 @@ const languageLabels: Record<Language, string> = {
 function readInitialDesign(): DesignVariant {
   const params = new URLSearchParams(window.location.search);
   const fromUrl = params.get("design");
-  if (fromUrl === "v2" || fromUrl === "v3") {
+  if (fromUrl === "v2" || fromUrl === "v2-refined" || fromUrl === "v3") {
     return fromUrl;
   }
-  return window.localStorage.getItem("liveLifeDesignVariant") === "v3" ? "v3" : "v2";
+  const stored = window.localStorage.getItem("liveLifeDesignVariant");
+  return stored === "v3" || stored === "v2-refined" ? stored : "v2";
 }
 
 export function App() {
@@ -341,7 +512,7 @@ export function App() {
     window.localStorage.setItem("liveLifeDesignVariant", design);
     const url = new URL(window.location.href);
     url.searchParams.set("design", design);
-    url.searchParams.set("v", "20260608-db-v3");
+    url.searchParams.set("v", "20260611-v2v3-logo-mail");
     window.history.replaceState({}, "", url);
   }, [design]);
 
@@ -390,7 +561,8 @@ export function App() {
     setFormStatus(t.submitting);
 
     const form = event.currentTarget;
-    const payload = Object.fromEntries(new FormData(form).entries());
+    const payload = Object.fromEntries(new FormData(form).entries()) as Record<string, FormDataEntryValue>;
+    openConnectMail(payload, t);
 
     try {
       const response = await fetch("/api/connect", {
@@ -429,6 +601,7 @@ export function App() {
             <span>{t.designLabel}</span>
             <select value={design} onChange={(event) => setDesign(event.target.value as DesignVariant)}>
               <option value="v2">{t.designV2}</option>
+              <option value="v2-refined">{t.designV2Refined}</option>
               <option value="v3">{t.designV3}</option>
             </select>
           </label>
@@ -605,6 +778,7 @@ export function App() {
 function V2Texture() {
   return (
     <>
+      <V2BandScroll />
       <div className="band-texture" aria-hidden="true">
         THE SMITHS OASIS BLUR RADIOHEAD PULP SUEDE JOY DIVISION NEW ORDER THE CURE STONE ROSES MY BLOODY VALENTINE SLOWDIVE PRIMAL SCREAM MASSIVE ATTACK PORTISHEAD SONIC YOUTH PIXIES
       </div>
@@ -621,15 +795,45 @@ function V2Texture() {
   );
 }
 
+function V2BandScroll() {
+  const columns = [
+    v2BandNames,
+    [...v2BandNames].slice(28).concat(v2BandNames.slice(0, 28)),
+    [...v2BandNames].slice(58).concat(v2BandNames.slice(0, 58)),
+  ];
+
+  return (
+    <div className="v2-band-scroll" aria-hidden="true">
+      {columns.map((names, index) => (
+        <div className={`v2-band-column column-${index + 1}`} key={index}>
+          {[...names, ...names].map((name, itemIndex) => (
+            <span key={`${name}-${itemIndex}`}>{name}</span>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function V3Signal() {
   return (
     <>
       <div className="v3-brand-signal" aria-hidden="true">
+        <div className="v3-logo-mark" />
         <div className="v3-band-cloud">{classicBandCloud}</div>
         <div className="v3-marquee-row row-one">LIVE LIFE LIVE LIFE LIVE LIFE LIVE LIFE LIVE LIFE LIVE LIFE LIVE LIFE</div>
         <div className="v3-marquee-row row-two">L I V E L I F E L I V E L I F E L I V E L I F E L I V E L I F E</div>
       </div>
       <div className="v3-track-field" aria-hidden="true">
+        <div className="song-timeline">
+          <span>THE LIBERTINES / MUSIC WHEN THE LIGHTS GO OUT</span>
+          <span>126 BPM</span>
+          <span>INDIE ROCK SESSION</span>
+        </div>
+        <span className="section-marker marker-a" />
+        <span className="section-marker marker-b" />
+        <span className="section-marker marker-c" />
+        <span className="track-wave mix-wave-a" />
         <span className="track-row row-a" />
         <span className="track-row row-b" />
         <span className="track-row row-c" />
@@ -637,6 +841,12 @@ function V3Signal() {
         <span className="track-block block-a" />
         <span className="track-block block-b" />
         <span className="track-block block-c" />
+        <span className="beat-grid beat-a" />
+        <span className="beat-grid beat-b" />
+        <span className="track-clip clip-a" />
+        <span className="track-clip clip-b" />
+        <span className="track-clip clip-c" />
+        <span className="track-wave mix-wave-b" />
         <span className="track-meter meter-a" />
         <span className="track-meter meter-b" />
       </div>
