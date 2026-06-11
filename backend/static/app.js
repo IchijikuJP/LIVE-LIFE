@@ -3,10 +3,11 @@ const translations = {
     langAttr: "zh-Hans",
     navShows: "演出情报",
     navCDSelect: "CD 严选",
-    navArchive: "档案",
+    navArchive: "档案馆",
     navConnect: "联系",
     designLabel: "设计方案",
     designV2: "V2 当前版",
+    designV2Refined: "V2 修改版",
     designV3: "V3 乐队信号版",
     heroEyebrow: "TOKYO MUSIC INDEX",
     heroTitle: "LIVE LIFE 是东京现场、CD 严选和音乐档案入口。",
@@ -20,19 +21,19 @@ const translations = {
     scheduleTitle: "近期日程",
     entryShows: "演出情报",
     entryCDSelect: "CD 严选",
-    entryArchive: "档案",
+    entryArchive: "档案馆",
     entryConnect: "联系",
-    showsEyebrow: "SHOWS",
+    showsEyebrow: "演出情报",
     showsTitle: "演出情报",
     showsNote: "LIVE LIFE 自主演出固定在最上方，推荐演出和历史视觉档案放在下面。",
-    cdEyebrow: "CD SELECT",
+    cdEyebrow: "CD 严选",
     cdTitle: "CD 严选",
     cdCopy: "这里分成 CD 和黑胶。单品详情里的购买按钮会跳到外部 Shop，例如 BASE。",
     formatAll: "全部",
     formatCD: "CD",
     formatVinyl: "黑胶",
-    archiveEyebrow: "ARCHIVE",
-    archiveTitle: "档案",
+    archiveEyebrow: "档案馆",
+    archiveTitle: "档案馆",
     archiveCopy: "历史海报、公开资料备注、照片和推荐文章以后会集中在这里。",
     connectEyebrow: "CONNECT",
     connectTitle: "票务、购买、发货或合作问题，都从这里联系。",
@@ -54,7 +55,7 @@ const translations = {
     submitFailed: "发送失败",
     requestFailed: "请求失败",
     ownBadge: "LIVE LIFE 自主演出",
-    recommendBadge: "推荐 / 档案",
+    recommendBadge: "推荐 / 档案馆",
     ticketPending: "票务待确认",
     sourceNote: "资料备注",
     scheduleLive: "LIVE",
@@ -66,36 +67,37 @@ const translations = {
   ja: {
     langAttr: "ja",
     navShows: "ライブ情報",
-    navCDSelect: "CD セレクト",
+    navCDSelect: "CD厳選",
     navArchive: "アーカイブ",
     navConnect: "問い合わせ",
     designLabel: "デザイン",
     designV2: "V2 現行案",
+    designV2Refined: "V2 改修案",
     designV3: "V3 バンド信号案",
     heroEyebrow: "TOKYO MUSIC INDEX",
-    heroTitle: "LIVE LIFE は東京のライブ、CD セレクト、音楽アーカイブの入口です。",
-    heroLead: "LIVE LIFE の自主公演、おすすめライブ、CD/ヴァイナルのセレクト、過去資料、問い合わせをひとつの音楽入口として整理します。",
+    heroTitle: "LIVE LIFE は東京のライブ、CD厳選、音楽アーカイブの入口です。",
+    heroLead: "LIVE LIFE の自主公演、おすすめライブ、CD/ヴァイナルの厳選、過去資料、問い合わせをひとつの音楽入口として整理します。",
     heroPrimary: "スケジュールを見る",
-    heroSecondary: "CD セレクトへ",
+    heroSecondary: "CD厳選へ",
     healthChecking: "API 確認中",
     healthOnline: "API 接続済み",
     healthOffline: "API 未接続",
     scheduleEyebrow: "SCHEDULE",
     scheduleTitle: "近日予定",
     entryShows: "ライブ情報",
-    entryCDSelect: "CD セレクト",
+    entryCDSelect: "CD厳選",
     entryArchive: "アーカイブ",
     entryConnect: "問い合わせ",
-    showsEyebrow: "SHOWS",
+    showsEyebrow: "ライブ情報",
     showsTitle: "ライブ情報",
     showsNote: "LIVE LIFE の自主公演を最上部に固定し、おすすめ公演と過去ビジュアルを下に配置します。",
-    cdEyebrow: "CD SELECT",
-    cdTitle: "CD セレクト",
+    cdEyebrow: "CD厳選",
+    cdTitle: "CD厳選",
     cdCopy: "CD とヴァイナルに分けます。詳細内の購入ボタンは BASE など外部 Shop へ移動します。",
     formatAll: "すべて",
     formatCD: "CD",
     formatVinyl: "ヴァイナル",
-    archiveEyebrow: "ARCHIVE",
+    archiveEyebrow: "アーカイブ",
     archiveTitle: "アーカイブ",
     archiveCopy: "過去フライヤー、公開資料メモ、写真、推薦記事などをここに集約します。",
     connectEyebrow: "CONNECT",
@@ -109,7 +111,7 @@ const translations = {
     placeholderEmail: "you@example.com",
     placeholderMessage: "困っていること、または LIVE LIFE に連絡したい内容を書いてください。",
     topicTicket: "チケット",
-    topicCDSelect: "CD セレクト",
+    topicCDSelect: "CD厳選",
     topicSupport: "購入・発送",
     topicCollab: "協力 / 投稿",
     submitButton: "送信",
@@ -129,33 +131,34 @@ const translations = {
   },
   en: {
     langAttr: "en",
-    navShows: "SHOWS",
-    navCDSelect: "CD SELECT",
+    navShows: "LIVES",
+    navCDSelect: "HAND-PICKED CD",
     navArchive: "ARCHIVE",
     navConnect: "CONNECT",
     designLabel: "DESIGN",
     designV2: "V2 CURRENT",
+    designV2Refined: "V2 REVISED",
     designV3: "V3 BAND SIGNAL",
     heroEyebrow: "TOKYO MUSIC INDEX",
-    heroTitle: "LIVE LIFE IS AN ENTRY POINT FOR TOKYO SHOWS, CD SELECT, AND MUSIC ARCHIVES.",
-    heroLead: "WE ORGANIZE LIVE LIFE OWNED SHOWS, RECOMMENDED LIVE DATES, CD/VINYL SELECT, ARCHIVES, AND SUPPORT MESSAGES INTO ONE CLEAR MUSIC INDEX.",
+    heroTitle: "LIVE LIFE IS AN ENTRY POINT FOR TOKYO LIVES, HAND-PICKED CD, AND MUSIC ARCHIVES.",
+    heroLead: "WE ORGANIZE LIVE LIFE OWNED LIVES, RECOMMENDED LIVE DATES, HAND-PICKED CD/VINYL, ARCHIVES, AND SUPPORT MESSAGES INTO ONE CLEAR MUSIC INDEX.",
     heroPrimary: "VIEW SCHEDULE",
-    heroSecondary: "ENTER CD SELECT",
+    heroSecondary: "ENTER HAND-PICKED CD",
     healthChecking: "CHECKING API",
     healthOnline: "API CONNECTED",
     healthOffline: "API OFFLINE",
     scheduleEyebrow: "SCHEDULE",
     scheduleTitle: "UPCOMING",
-    entryShows: "SHOWS",
-    entryCDSelect: "CD SELECT",
+    entryShows: "LIVES",
+    entryCDSelect: "HAND-PICKED CD",
     entryArchive: "ARCHIVE",
     entryConnect: "CONNECT",
-    showsEyebrow: "SHOWS",
-    showsTitle: "SHOWS",
-    showsNote: "LIVE LIFE OWNED SHOWS STAY AT THE TOP. RECOMMENDATIONS AND ARCHIVE VISUALS SIT BELOW.",
-    cdEyebrow: "CD SELECT",
-    cdTitle: "CD SELECT",
-    cdCopy: "CD SELECT IS SPLIT INTO CD AND VINYL. PURCHASE BUTTONS ON DETAIL CARDS LINK TO EXTERNAL SHOPS SUCH AS BASE.",
+    showsEyebrow: "LIVES",
+    showsTitle: "LIVES",
+    showsNote: "LIVE LIFE OWNED LIVES STAY AT THE TOP. RECOMMENDATIONS AND ARCHIVE VISUALS SIT BELOW.",
+    cdEyebrow: "HAND-PICKED CD",
+    cdTitle: "HAND-PICKED CD",
+    cdCopy: "HAND-PICKED CD IS SPLIT INTO CD AND VINYL. PURCHASE BUTTONS ON DETAIL CARDS LINK TO EXTERNAL SHOPS SUCH AS BASE.",
     formatAll: "ALL",
     formatCD: "CD",
     formatVinyl: "VINYL",
@@ -173,7 +176,7 @@ const translations = {
     placeholderEmail: "you@example.com",
     placeholderMessage: "TELL US WHAT HAPPENED OR WHY YOU WANT TO CONTACT LIVE LIFE.",
     topicTicket: "TICKETING",
-    topicCDSelect: "CD SELECT",
+    topicCDSelect: "HAND-PICKED CD",
     topicSupport: "PURCHASE OR SHIPPING",
     topicCollab: "COLLABORATION / SUBMISSION",
     submitButton: "SEND MESSAGE",
@@ -206,6 +209,7 @@ const formResult = document.querySelector("#formResult");
 const designSelect = document.querySelector("#designSelect");
 const languageButtons = Array.from(document.querySelectorAll(".language-button"));
 const formatTabs = Array.from(document.querySelectorAll(".format-tab"));
+const connectMailAddress = "livelife.cn.2023@gmail.com";
 
 let currentLanguage = "zh";
 let currentDesign = readInitialDesign();
@@ -235,6 +239,56 @@ function localizedMap(value) {
   return value[currentLanguage] || value.zh || "";
 }
 
+function formText(payload, key) {
+  return typeof payload[key] === "string" ? payload[key].trim() : "";
+}
+
+function connectTopicLabel(topic) {
+  const labels = {
+    ticket: t("topicTicket"),
+    "cd-select": t("topicCDSelect"),
+    support: t("topicSupport"),
+    collab: t("topicCollab"),
+  };
+  return labels[topic] || topic;
+}
+
+// Connect 表单先打开 mailto 草稿，让用户可以直接通过自己的邮件 App 或网页邮箱发送。
+// 同时保留本地 API 入库，后续如果接服务端邮件、客服后台或管理列表，不需要再改页面入口。
+function buildConnectMailto(payload) {
+  const nickname = formText(payload, "nickname") || "-";
+  const email = formText(payload, "email") || "-";
+  const topic = connectTopicLabel(formText(payload, "topic"));
+  const message = formText(payload, "message") || "-";
+  const subject = `[LIVE LIFE CONNECT] ${topic} / ${nickname}`;
+  const body = [
+    "LIVE LIFE CONNECT",
+    "",
+    `${t("labelNickname")}: ${nickname}`,
+    `${t("labelEmail")}: ${email}`,
+    `${t("labelTopic")}: ${topic}`,
+    "",
+    `${t("labelMessage")}:`,
+    message,
+    "",
+    `Page: ${window.location.href}`,
+    `Time: ${new Date().toLocaleString()}`,
+  ].join("\n");
+
+  return `mailto:${connectMailAddress}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
+function openConnectMail(payload) {
+  const mailtoUrl = buildConnectMailto(payload);
+  const link = document.createElement("a");
+  link.href = mailtoUrl;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+}
+
 function escapeHTML(value) {
   return String(value || "")
     .replaceAll("&", "&amp;")
@@ -257,19 +311,19 @@ async function getJSON(url) {
 function readInitialDesign() {
   const params = new URLSearchParams(window.location.search);
   const fromUrl = params.get("design");
-  if (fromUrl === "v2" || fromUrl === "v3") {
+  if (fromUrl === "v2" || fromUrl === "v2-refined" || fromUrl === "v3") {
     return fromUrl;
   }
   try {
     const stored = window.localStorage.getItem("liveLifeDesignVariant");
-    return stored === "v3" ? "v3" : "v2";
+    return stored === "v3" || stored === "v2-refined" ? stored : "v2";
   } catch {
     return "v2";
   }
 }
 
 function applyDesign(design, options = { updateUrl: true }) {
-  currentDesign = design === "v3" ? "v3" : "v2";
+  currentDesign = design === "v3" || design === "v2-refined" ? design : "v2";
   document.body.dataset.design = currentDesign;
   if (designSelect) {
     designSelect.value = currentDesign;
@@ -282,7 +336,7 @@ function applyDesign(design, options = { updateUrl: true }) {
   if (options.updateUrl) {
     const url = new URL(window.location.href);
     url.searchParams.set("design", currentDesign);
-    url.searchParams.set("v", "20260608-db-v3");
+    url.searchParams.set("v", "20260611-v2v3-logo-mail");
     window.history.replaceState({}, "", url);
   }
 }
@@ -471,6 +525,7 @@ connectForm.addEventListener("submit", async (event) => {
   formResult.textContent = t("submitting");
 
   const data = Object.fromEntries(new FormData(connectForm).entries());
+  openConnectMail(data);
 
   try {
     const response = await fetch("/api/connect", {

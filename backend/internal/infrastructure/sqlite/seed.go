@@ -33,7 +33,7 @@ func createSeedEventIfMissing(tx *gorm.DB, event domain.Event, order int) error 
 		return err
 	}
 	if count > 0 {
-		return nil
+		return updateSeedEvent(tx, event, order)
 	}
 	return createSeedEvent(tx, event, order)
 }
@@ -60,6 +60,44 @@ func createSeedEvent(tx *gorm.DB, event domain.Event, order int) error {
 	if err := tx.Create(&model).Error; err != nil {
 		return err
 	}
+	return replaceSeedEventChildren(tx, event)
+}
+
+func updateSeedEvent(tx *gorm.DB, event domain.Event, order int) error {
+	model := EventModel{
+		ID:           event.ID,
+		Brand:        event.Brand,
+		Owned:        event.Owned,
+		Category:     event.Category,
+		Title:        event.Title,
+		Date:         event.Date,
+		Time:         event.Time,
+		Venue:        event.Venue,
+		Area:         event.Area,
+		Price:        event.Price,
+		Summary:      event.Summary,
+		TicketNote:   event.TicketNote,
+		MapURL:       event.MapURL,
+		ImageURL:     event.ImageURL,
+		SourceNote:   event.SourceNote,
+		DisplayOrder: order,
+	}
+	if err := tx.Save(&model).Error; err != nil {
+		return err
+	}
+	if err := tx.Where("event_id = ?", event.ID).Delete(&EventTranslationModel{}).Error; err != nil {
+		return err
+	}
+	if err := tx.Where("event_id = ?", event.ID).Delete(&EventLineupModel{}).Error; err != nil {
+		return err
+	}
+	if err := tx.Where("event_id = ?", event.ID).Delete(&EventTagModel{}).Error; err != nil {
+		return err
+	}
+	return replaceSeedEventChildren(tx, event)
+}
+
+func replaceSeedEventChildren(tx *gorm.DB, event domain.Event) error {
 	for lang, title := range event.TitleI18n {
 		translation := EventTranslationModel{
 			EventID:    event.ID,
@@ -94,7 +132,7 @@ func createSeedCatalogItemIfMissing(tx *gorm.DB, item domain.CatalogItem, order 
 		return err
 	}
 	if count > 0 {
-		return nil
+		return updateSeedCatalogItem(tx, item, order)
 	}
 	return createSeedCatalogItem(tx, item, order)
 }
@@ -116,6 +154,36 @@ func createSeedCatalogItem(tx *gorm.DB, item domain.CatalogItem, order int) erro
 	if err := tx.Create(&model).Error; err != nil {
 		return err
 	}
+	return replaceSeedCatalogItemChildren(tx, item)
+}
+
+func updateSeedCatalogItem(tx *gorm.DB, item domain.CatalogItem, order int) error {
+	model := CatalogItemModel{
+		ID:           item.ID,
+		Brand:        item.Brand,
+		Format:       item.Format,
+		Artist:       item.Artist,
+		Title:        item.Title,
+		Summary:      item.Summary,
+		Status:       item.Status,
+		Price:        item.Price,
+		ImageURL:     item.ImageURL,
+		PurchaseURL:  item.PurchaseURL,
+		DisplayOrder: order,
+	}
+	if err := tx.Save(&model).Error; err != nil {
+		return err
+	}
+	if err := tx.Where("item_id = ?", item.ID).Delete(&CatalogItemTranslationModel{}).Error; err != nil {
+		return err
+	}
+	if err := tx.Where("item_id = ?", item.ID).Delete(&CatalogItemTrackModel{}).Error; err != nil {
+		return err
+	}
+	return replaceSeedCatalogItemChildren(tx, item)
+}
+
+func replaceSeedCatalogItemChildren(tx *gorm.DB, item domain.CatalogItem) error {
 	for lang, title := range item.TitleI18n {
 		translation := CatalogItemTranslationModel{
 			ItemID:       item.ID,
@@ -143,7 +211,7 @@ func createSeedContentIfMissing(tx *gorm.DB, item domain.ContentItem, order int)
 		return err
 	}
 	if count > 0 {
-		return nil
+		return updateSeedContent(tx, item, order)
 	}
 	return createSeedContent(tx, item, order)
 }
@@ -160,6 +228,28 @@ func createSeedContent(tx *gorm.DB, item domain.ContentItem, order int) error {
 	if err := tx.Create(&model).Error; err != nil {
 		return err
 	}
+	return replaceSeedContentChildren(tx, item)
+}
+
+func updateSeedContent(tx *gorm.DB, item domain.ContentItem, order int) error {
+	model := ContentItemModel{
+		ID:           item.ID,
+		Brand:        item.Brand,
+		Type:         item.Type,
+		Title:        item.Title,
+		Summary:      item.Summary,
+		DisplayOrder: order,
+	}
+	if err := tx.Save(&model).Error; err != nil {
+		return err
+	}
+	if err := tx.Where("content_id = ?", item.ID).Delete(&ContentTranslationModel{}).Error; err != nil {
+		return err
+	}
+	return replaceSeedContentChildren(tx, item)
+}
+
+func replaceSeedContentChildren(tx *gorm.DB, item domain.ContentItem) error {
 	for lang, title := range item.TitleI18n {
 		translation := ContentTranslationModel{
 			ContentID: item.ID,
@@ -187,19 +277,34 @@ func seedEvents() []domain.Event {
 				"ja": "LIVE LIFE presents 紅髪少年殺人事件 東京2公演",
 				"en": "LIVE LIFE PRESENTS RED HAIR BOY MURDER CASE IN TOKYO",
 			},
-			Date:    "2026-07-10 / 2026-07-14",
-			Time:    "7/10 OPEN 18:45 START 19:30; 7/14 OPEN 19:00 START 19:30",
-			Venue:   "GRIT at Shibuya / Shimokitazawa THREE",
-			Area:    "Shibuya / Shimokitazawa",
-			Price:   "7/10 adv ¥5,000 + 1D, door ¥5,500 + 1D; 7/14 adv ¥4,000 + 1D, door ¥4,500 + 1D",
-			Tags:    []string{"LIVE LIFE", "own live", "alternative rock", "Tokyo"},
-			Summary: "Two Tokyo shows by 紅髪少年殺人事件. The July 14 Shimokitazawa show features ルサンチマン and おそロシア革命.",
-			SummaryI18n: domain.LocalizedText{
-				"zh": "7月10日和7月14日，LIVE LIFE 将在东京分别呈现两场 紅髮少年殺人事件 演出。7月14日下北泽场共演为东京新生代另类摇滚乐队「ルサンチマン」和来自广岛尾道、极具个人特色的 DIY 独立音乐企划「おそロシア革命」。",
-				"ja": "7月10日と7月14日、LIVE LIFE は東京で 紅髪少年殺人事件 の2公演を行います。7月14日の下北沢公演には、東京発のオルタナティブロックバンド「ルサンチマン」と、広島・尾道発のDIYインディー企画「おそロシア革命」が出演します。",
-				"en": "ON JULY 10 AND JULY 14, LIVE LIFE PRESENTS TWO TOKYO SHOWS BY RED HAIR BOY MURDER CASE. THE JULY 14 SHIMOKITAZAWA SHOW FEATURES RUSANTIMAN AND OSOROSHIA KAKUMEI.",
+			Date:  "2026-07-10 / 2026-07-14",
+			Time:  "7/10 OPEN 18:45 START 19:30; 7/14 OPEN 19:00 START 19:30",
+			Venue: "GRIT at Shibuya / Shimokitazawa THREE",
+			Area:  "Shibuya / Shimokitazawa",
+			Price: "7/10 adv ¥5,000 + 1D, door ¥5,500 + 1D; 7/14 adv ¥4,000 + 1D, door ¥4,500 + 1D",
+			Tags: []string{
+				"LIVE LIFE",
+				"own live",
+				"alternative rock",
+				"Tokyo",
+				"向井秀徳アコースティック&エレクトリック",
+				"ルサンチマン",
+				"おそロシア革命",
+				"dj:じん",
 			},
-			Lineup:     []string{"紅髪少年殺人事件", "ルサンチマン", "おそロシア革命"},
+			Summary: "Two Tokyo shows by 紅髪少年殺人事件. The July 10 Shibuya guest is 向井秀徳アコースティック&エレクトリック. The July 14 Shimokitazawa show features ルサンチマン, おそロシア革命, and dj:じん.",
+			SummaryI18n: domain.LocalizedText{
+				"zh": "7月10日和7月14日，LIVE LIFE 将在东京分别呈现两场 紅髮少年殺人事件 演出。7月10日涩谷场嘉宾为「向井秀徳アコースティック&エレクトリック」；7月14日下北泽场共演为「ルサンチマン」「おそロシア革命」，DJ 为「dj:じん」。",
+				"ja": "7月10日と7月14日、LIVE LIFE は東京で 紅髪少年殺人事件 の2公演を行います。7月10日の渋谷公演には「向井秀徳アコースティック&エレクトリック」、7月14日の下北沢公演には「ルサンチマン」「おそロシア革命」、DJ として「dj:じん」が出演します。",
+				"en": "ON JULY 10 AND JULY 14, LIVE LIFE PRESENTS TWO TOKYO SHOWS BY RED HAIR BOY MURDER CASE. THE JULY 10 SHIBUYA GUEST IS MUKAI SHUTOKU ACOUSTIC & ELECTRIC. THE JULY 14 SHIMOKITAZAWA SHOW FEATURES RUSANTIMAN, OSOROSHIA KAKUMEI, AND DJ:JIN.",
+			},
+			Lineup: []string{
+				"紅髪少年殺人事件",
+				"向井秀徳アコースティック&エレクトリック",
+				"ルサンチマン",
+				"おそロシア革命",
+				"dj:じん",
+			},
 			TicketNote: "Ticket links are pending. Keep the external ticket agency flow separate from the LIVE LIFE site.",
 			TicketNoteI18n: domain.LocalizedText{
 				"zh": "票务链接待确认。演出票站可能由外部代理处理，LIVE LIFE 站内先展示情报，不直接结算。",
@@ -264,14 +369,14 @@ func seedCDItems() []domain.CatalogItem {
 			Title:  "Selected CD placeholder",
 			TitleI18n: domain.LocalizedText{
 				"zh": "紅髮少年殺人事件 CD 严选占位",
-				"ja": "紅髪少年殺人事件 CD セレクト仮枠",
-				"en": "RED HAIR BOY MURDER CASE CD SELECT",
+				"ja": "紅髪少年殺人事件 CD厳選仮枠",
+				"en": "RED HAIR BOY MURDER CASE HAND-PICKED CD",
 			},
-			Summary: "A curated CD slot for show-related releases. Purchase goes to an external shop.",
+			Summary: "A hand-picked CD slot for show-related releases. Purchase goes to an external shop.",
 			SummaryI18n: domain.LocalizedText{
 				"zh": "这里作为 CD 严选的 CD 分类占位。单品详情页会放「点击此处购买」按钮，跳转到 BASE 等外部 Shop。",
-				"ja": "CDセレクト内のCDカテゴリ仮枠です。詳細ページの購入ボタンから BASE など外部ショップへ遷移します。",
-				"en": "A CD SELECT SLOT. THE DETAIL PAGE PURCHASE BUTTON LINKS TO AN EXTERNAL SHOP SUCH AS BASE.",
+				"ja": "CD厳選内のCDカテゴリ仮枠です。詳細ページの購入ボタンから BASE など外部ショップへ遷移します。",
+				"en": "A HAND-PICKED CD SLOT. THE DETAIL PAGE PURCHASE BUTTON LINKS TO AN EXTERNAL SHOP SUCH AS BASE.",
 			},
 			Tracks:      []string{"A-side reference", "Live note", "Shop link pending"},
 			Status:      "external shop",
@@ -328,9 +433,9 @@ func seedContents() []domain.ContentItem {
 			},
 			Summary: "LIVE LIFE is a Tokyo-facing music entry point for shows, CD select, archive, and support messages.",
 			SummaryI18n: domain.LocalizedText{
-				"zh": "LIVE LIFE 会先成为东京演出情报、LIVE LIFE 自主演出、CD 严选、Archive 和 Connect 的统一入口。",
-				"ja": "LIVE LIFE は東京のライブ情報、自主公演、CDセレクト、Archive、Connect をまとめる入口として始めます。",
-				"en": "LIVE LIFE STARTS AS ONE ENTRY POINT FOR TOKYO SHOWS, OWNED EVENTS, CD SELECT, ARCHIVE, AND CONNECT.",
+				"zh": "LIVE LIFE 会先成为东京演出情报、LIVE LIFE 自主演出、CD 严选、档案馆和 Connect 的统一入口。",
+				"ja": "LIVE LIFE は東京のライブ情報、自主公演、CD厳選、Archive、Connect をまとめる入口として始めます。",
+				"en": "LIVE LIFE STARTS AS ONE ENTRY POINT FOR TOKYO LIVES, OWNED EVENTS, HAND-PICKED CD, ARCHIVE, AND CONNECT.",
 			},
 		},
 		{
