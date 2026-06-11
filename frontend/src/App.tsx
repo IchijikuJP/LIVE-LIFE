@@ -1,121 +1,14 @@
 import { Archive, Disc3, Mail, Ticket } from "lucide-react";
 import { FormEvent, ReactNode, useEffect, useMemo, useState } from "react";
 
-type Language = "zh" | "ja" | "en";
+import type { CatalogItem, EventItem, Language, LocalizedText } from "./types/api";
+import { copy, languageLabels } from "./i18n";
+import type { Copy } from "./i18n";
+import { useLiveLifeData } from "./hooks/useLiveLifeData";
+
+// UI 本地状态类型，不属于 API 契约，后续随设计/筛选功能再各自归位。
 type DesignVariant = "v2" | "v2-refined" | "v3";
 type FormatFilter = "all" | "cd" | "vinyl";
-type LocalizedText = Partial<Record<Language, string>>;
-
-type EventItem = {
-  id: string;
-  owned: boolean;
-  title: string;
-  titleI18n?: LocalizedText;
-  date: string;
-  time: string;
-  venue: string;
-  price: string;
-  summary: string;
-  summaryI18n?: LocalizedText;
-  imageUrl?: string;
-  lineup?: string[];
-  tags?: string[];
-  ticketNote?: string;
-  ticketNoteI18n?: LocalizedText;
-  sourceNote?: string;
-  sourceNoteI18n?: LocalizedText;
-};
-
-type CatalogItem = {
-  id: string;
-  format: "cd" | "vinyl";
-  artist: string;
-  title: string;
-  titleI18n?: LocalizedText;
-  summary: string;
-  summaryI18n?: LocalizedText;
-  status: string;
-  price: string;
-  imageUrl?: string;
-  purchaseUrl: string;
-  purchaseText?: LocalizedText;
-  tracks?: string[];
-};
-
-type ContentItem = {
-  id: string;
-  type: string;
-  title: string;
-  titleI18n?: LocalizedText;
-  summary: string;
-  summaryI18n?: LocalizedText;
-};
-
-type HealthPayload = {
-  status: string;
-  brand: string;
-  service: string;
-};
-
-type Copy = {
-  langAttr: string;
-  navShows: string;
-  navCDSelect: string;
-  navArchive: string;
-  navConnect: string;
-  designLabel: string;
-  designV2: string;
-  designV2Refined: string;
-  designV3: string;
-  heroEyebrow: string;
-  heroTitle: string;
-  heroLead: string;
-  heroPrimary: string;
-  heroSecondary: string;
-  apiChecking: string;
-  apiOnline: string;
-  apiOffline: string;
-  scheduleEyebrow: string;
-  scheduleTitle: string;
-  showsEyebrow: string;
-  showsTitle: string;
-  showsNote: string;
-  cdEyebrow: string;
-  cdTitle: string;
-  cdCopy: string;
-  formatAll: string;
-  formatCD: string;
-  formatVinyl: string;
-  archiveEyebrow: string;
-  archiveTitle: string;
-  archiveCopy: string;
-  connectEyebrow: string;
-  connectTitle: string;
-  connectCopy: string;
-  labelNickname: string;
-  labelEmail: string;
-  labelTopic: string;
-  labelMessage: string;
-  placeholderNickname: string;
-  placeholderEmail: string;
-  placeholderMessage: string;
-  topicTicket: string;
-  topicCDSelect: string;
-  topicSupport: string;
-  topicCollab: string;
-  submitButton: string;
-  submitting: string;
-  submitFallback: string;
-  submitFailed: string;
-  ownBadge: string;
-  recommendBadge: string;
-  ticketPending: string;
-  sourceNote: string;
-  scheduleLive: string;
-  scheduleCD: string;
-  scheduleVinyl: string;
-  externalShopNote: string;
-};
 
 const connectMailAddress = "livelife.cn.2023@gmail.com";
 
@@ -170,185 +63,6 @@ function openConnectMail(payload: Record<string, FormDataEntryValue>, copyText: 
   link.remove();
 }
 
-const copy: Record<Language, Copy> = {
-  zh: {
-    langAttr: "zh-Hans",
-    navShows: "演出情报",
-    navCDSelect: "CD 严选",
-    navArchive: "档案馆",
-    navConnect: "联系",
-    designLabel: "设计方案",
-    designV2: "V2 当前版",
-    designV2Refined: "V2 修改版",
-    designV3: "V3 乐队信号版",
-    heroEyebrow: "TOKYO MUSIC INDEX",
-    heroTitle: "LIVE LIFE 是东京现场、CD 严选和音乐档案入口。",
-    heroLead: "我们把 LIVE LIFE 自主演出、推荐现场、CD/黑胶严选、历史档案和售后联系整理成一个清晰的音乐入口。",
-    heroPrimary: "看演出日程",
-    heroSecondary: "进入 CD 严选",
-    apiChecking: "API 检查中",
-    apiOnline: "API 已连接",
-    apiOffline: "API 未连接",
-    scheduleEyebrow: "SCHEDULE",
-    scheduleTitle: "近期日程",
-    showsEyebrow: "演出情报",
-    showsTitle: "演出情报",
-    showsNote: "LIVE LIFE 自主演出固定在最上方，推荐演出和历史视觉档案放在下面。",
-    cdEyebrow: "CD 严选",
-    cdTitle: "CD 严选",
-    cdCopy: "这里分成 CD 和黑胶。单品详情里的购买按钮会跳到外部 Shop，例如 BASE。",
-    formatAll: "全部",
-    formatCD: "CD",
-    formatVinyl: "黑胶",
-    archiveEyebrow: "档案馆",
-    archiveTitle: "档案馆",
-    archiveCopy: "历史海报、公开资料备注、照片和推荐文章以后会集中在这里。",
-    connectEyebrow: "CONNECT",
-    connectTitle: "票务、购买、发货或合作问题，都从这里联系。",
-    connectCopy: "外部平台购买后没有收到货、CD/黑胶购买咨询、票务问题、活动合作和投稿，都可以从这里给 LIVE LIFE 发消息。",
-    labelNickname: "昵称",
-    labelEmail: "邮箱",
-    labelTopic: "问题类型",
-    labelMessage: "留言",
-    placeholderNickname: "LIVE LIFE 朋友",
-    placeholderEmail: "you@example.com",
-    placeholderMessage: "请写下你遇到的问题或想联系 LIVE LIFE 的原因。",
-    topicTicket: "票务",
-    topicCDSelect: "CD 严选",
-    topicSupport: "购买或发货问题",
-    topicCollab: "合作 / 投稿",
-    submitButton: "发送消息",
-    submitting: "发送中...",
-    submitFallback: "LIVE LIFE 已收到你的消息。",
-    submitFailed: "发送失败",
-    ownBadge: "LIVE LIFE 自主演出",
-    recommendBadge: "推荐 / 档案馆",
-    ticketPending: "票务待确认",
-    sourceNote: "资料备注",
-    scheduleLive: "LIVE",
-    scheduleCD: "CD",
-    scheduleVinyl: "VINYL",
-    externalShopNote: "购买会跳转到外部 Shop",
-  },
-  ja: {
-    langAttr: "ja",
-    navShows: "ライブ情報",
-    navCDSelect: "CD厳選",
-    navArchive: "アーカイブ",
-    navConnect: "問い合わせ",
-    designLabel: "デザイン",
-    designV2: "V2 現行案",
-    designV2Refined: "V2 改修案",
-    designV3: "V3 バンド信号案",
-    heroEyebrow: "TOKYO MUSIC INDEX",
-    heroTitle: "LIVE LIFE は東京のライブ、CD厳選、音楽アーカイブの入口です。",
-    heroLead: "LIVE LIFE の自主公演、おすすめライブ、CD/ヴァイナルの厳選、過去資料、問い合わせをひとつの音楽入口として整理します。",
-    heroPrimary: "スケジュールを見る",
-    heroSecondary: "CD厳選へ",
-    apiChecking: "API 確認中",
-    apiOnline: "API 接続済み",
-    apiOffline: "API 未接続",
-    scheduleEyebrow: "SCHEDULE",
-    scheduleTitle: "近日予定",
-    showsEyebrow: "ライブ情報",
-    showsTitle: "ライブ情報",
-    showsNote: "LIVE LIFE の自主公演を最上部に固定し、おすすめ公演と過去ビジュアルを下に配置します。",
-    cdEyebrow: "CD厳選",
-    cdTitle: "CD厳選",
-    cdCopy: "CD とヴァイナルに分けます。詳細内の購入ボタンは BASE など外部 Shop へ移動します。",
-    formatAll: "すべて",
-    formatCD: "CD",
-    formatVinyl: "ヴァイナル",
-    archiveEyebrow: "アーカイブ",
-    archiveTitle: "アーカイブ",
-    archiveCopy: "過去フライヤー、公開資料メモ、写真、推薦記事などをここに集約します。",
-    connectEyebrow: "CONNECT",
-    connectTitle: "チケット、購入、発送、コラボの相談はこちらから。",
-    connectCopy: "外部 Shop 購入後の未着、CD/ヴァイナル購入相談、チケット、イベント協力、投稿などを LIVE LIFE に送れます。",
-    labelNickname: "ニックネーム",
-    labelEmail: "メール",
-    labelTopic: "問い合わせ種別",
-    labelMessage: "メッセージ",
-    placeholderNickname: "LIVE LIFE の友人",
-    placeholderEmail: "you@example.com",
-    placeholderMessage: "困っていること、または LIVE LIFE に連絡したい内容を書いてください。",
-    topicTicket: "チケット",
-    topicCDSelect: "CD厳選",
-    topicSupport: "購入・発送",
-    topicCollab: "協力 / 投稿",
-    submitButton: "送信",
-    submitting: "送信中...",
-    submitFallback: "LIVE LIFE がメッセージを受け取りました。",
-    submitFailed: "送信に失敗しました",
-    ownBadge: "LIVE LIFE 自主公演",
-    recommendBadge: "おすすめ / アーカイブ",
-    ticketPending: "チケット確認中",
-    sourceNote: "情報メモ",
-    scheduleLive: "LIVE",
-    scheduleCD: "CD",
-    scheduleVinyl: "VINYL",
-    externalShopNote: "購入は外部 Shop へ移動します",
-  },
-  en: {
-    langAttr: "en",
-    navShows: "LIVES",
-    navCDSelect: "HAND-PICKED CD",
-    navArchive: "ARCHIVE",
-    navConnect: "CONNECT",
-    designLabel: "DESIGN",
-    designV2: "V2 CURRENT",
-    designV2Refined: "V2 REVISED",
-    designV3: "V3 BAND SIGNAL",
-    heroEyebrow: "TOKYO MUSIC INDEX",
-    heroTitle: "LIVE LIFE IS AN ENTRY POINT FOR TOKYO LIVES, HAND-PICKED CD, AND MUSIC ARCHIVES.",
-    heroLead: "WE ORGANIZE LIVE LIFE OWNED LIVES, RECOMMENDED LIVE DATES, HAND-PICKED CD/VINYL, ARCHIVES, AND SUPPORT MESSAGES INTO ONE CLEAR MUSIC INDEX.",
-    heroPrimary: "VIEW SCHEDULE",
-    heroSecondary: "ENTER HAND-PICKED CD",
-    apiChecking: "CHECKING API",
-    apiOnline: "API CONNECTED",
-    apiOffline: "API OFFLINE",
-    scheduleEyebrow: "SCHEDULE",
-    scheduleTitle: "UPCOMING",
-    showsEyebrow: "LIVES",
-    showsTitle: "LIVES",
-    showsNote: "LIVE LIFE OWNED LIVES STAY AT THE TOP. RECOMMENDATIONS AND ARCHIVE VISUALS SIT BELOW.",
-    cdEyebrow: "HAND-PICKED CD",
-    cdTitle: "HAND-PICKED CD",
-    cdCopy: "HAND-PICKED CD IS SPLIT INTO CD AND VINYL. PURCHASE BUTTONS ON DETAIL CARDS LINK TO EXTERNAL SHOPS SUCH AS BASE.",
-    formatAll: "ALL",
-    formatCD: "CD",
-    formatVinyl: "VINYL",
-    archiveEyebrow: "ARCHIVE",
-    archiveTitle: "ARCHIVE",
-    archiveCopy: "PAST POSTERS, PUBLIC RESEARCH NOTES, PHOTOS, AND RECOMMENDED ARTICLES WILL LIVE HERE.",
-    connectEyebrow: "CONNECT",
-    connectTitle: "TICKETS, PURCHASES, SHIPPING, OR COLLABORATION QUESTIONS START HERE.",
-    connectCopy: "MESSAGE LIVE LIFE ABOUT EXTERNAL SHOP ORDERS, CD/VINYL QUESTIONS, TICKETS, EVENT COLLABORATION, OR SUBMISSIONS.",
-    labelNickname: "NAME",
-    labelEmail: "EMAIL",
-    labelTopic: "TOPIC",
-    labelMessage: "MESSAGE",
-    placeholderNickname: "LIVE LIFE FRIEND",
-    placeholderEmail: "you@example.com",
-    placeholderMessage: "TELL US WHAT HAPPENED OR WHY YOU WANT TO CONTACT LIVE LIFE.",
-    topicTicket: "TICKETING",
-    topicCDSelect: "HAND-PICKED CD",
-    topicSupport: "PURCHASE OR SHIPPING",
-    topicCollab: "COLLABORATION / SUBMISSION",
-    submitButton: "SEND MESSAGE",
-    submitting: "SENDING...",
-    submitFallback: "LIVE LIFE RECEIVED YOUR MESSAGE.",
-    submitFailed: "SEND FAILED",
-    ownBadge: "LIVE LIFE OWNED SHOW",
-    recommendBadge: "RECOMMENDATION / ARCHIVE",
-    ticketPending: "TICKETING PENDING",
-    sourceNote: "SOURCE NOTE",
-    scheduleLive: "LIVE",
-    scheduleCD: "CD",
-    scheduleVinyl: "VINYL",
-    externalShopNote: "PURCHASE OPENS AN EXTERNAL SHOP",
-  },
-};
 
 const classicBandCloud =
   "THE BEATLES THE ROLLING STONES LED ZEPPELIN PINK FLOYD QUEEN THE WHO DAVID BOWIE THE KINKS T. REX ROXY MUSIC THE CLASH SEX PISTOLS THE JAM BUZZCOCKS JOY DIVISION NEW ORDER THE SMITHS THE CURE SIOUXSIE AND THE BANSHEES ECHO AND THE BUNNYMEN THE STONE ROSES MY BLOODY VALENTINE SLOWDIVE PRIMAL SCREAM RADIOHEAD OASIS BLUR SUEDE PULP THE VERVE ARCTIC MONKEYS NIRVANA PIXIES SONIC YOUTH R.E.M. THE STOOGES THE VELVET UNDERGROUND TALKING HEADS";
@@ -466,11 +180,6 @@ const v2BandNames = [
   "THE SEA AND CAKE",
 ];
 
-const languageLabels: Record<Language, string> = {
-  zh: "中文",
-  ja: "日本語",
-  en: "ENGLISH",
-};
 
 function readInitialDesign(): DesignVariant {
   const params = new URLSearchParams(window.location.search);
@@ -486,12 +195,8 @@ export function App() {
   const [language, setLanguage] = useState<Language>("zh");
   const [design, setDesign] = useState<DesignVariant>(readInitialDesign);
   const [formatFilter, setFormatFilter] = useState<FormatFilter>("all");
-  const [events, setEvents] = useState<EventItem[]>([]);
-  const [catalog, setCatalog] = useState<CatalogItem[]>([]);
-  const [contents, setContents] = useState<ContentItem[]>([]);
-  const [health, setHealth] = useState<HealthPayload | null>(null);
-  const [apiStatus, setApiStatus] = useState<"checking" | "online" | "offline">("checking");
   const [formStatus, setFormStatus] = useState("");
+  const { events, catalog, contents, health, apiStatus } = useLiveLifeData();
   const t = copy[language];
 
   const ownedEvents = useMemo(() => events.filter((event) => event.owned), [events]);
@@ -515,46 +220,6 @@ export function App() {
     url.searchParams.set("v", "20260611-v2v3-logo-mail");
     window.history.replaceState({}, "", url);
   }, [design]);
-
-  // 前端启动后统一从 Go API 读取数据；这些 API 背后现在已经由 GORM 从 SQLite 读写。
-  // 后续如果换成 PostgreSQL 或后台管理系统，React 页面不需要改字段，只要 API 契约保持一致。
-  useEffect(() => {
-    let alive = true;
-
-    async function load() {
-      try {
-        const [healthRes, eventsRes, cdRes, contentsRes] = await Promise.all([
-          fetch("/api/health"),
-          fetch("/api/events"),
-          fetch("/api/cd-items"),
-          fetch("/api/contents"),
-        ]);
-        if (!healthRes.ok || !eventsRes.ok || !cdRes.ok || !contentsRes.ok) {
-          throw new Error("API request failed");
-        }
-        const [healthData, eventsData, cdData, contentsData] = await Promise.all([
-          healthRes.json(),
-          eventsRes.json(),
-          cdRes.json(),
-          contentsRes.json(),
-        ]);
-        if (!alive) return;
-        setHealth(healthData);
-        setEvents(eventsData.events || []);
-        setCatalog(cdData.items || []);
-        setContents(contentsData.contents || []);
-        setApiStatus("online");
-      } catch {
-        if (!alive) return;
-        setApiStatus("offline");
-      }
-    }
-
-    load();
-    return () => {
-      alive = false;
-    };
-  }, []);
 
   async function submitConnect(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
